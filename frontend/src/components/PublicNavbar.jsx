@@ -1,26 +1,43 @@
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { FiTrendingUp } from 'react-icons/fi';
+import { useTheme } from '../context/ThemeContext';
+import { FiTrendingUp, FiSun, FiMoon } from 'react-icons/fi';
 
 const PublicNavbar = () => {
   const { user } = useContext(AuthContext);
+  const { theme, toggleTheme } = useTheme();
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-800">
+    <nav className="border-b transition-colors duration-300
+                    bg-gray-900 border-gray-800
+                    [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center text-orange-500 hover:text-orange-400 transition-colors">
               <FiTrendingUp className="text-2xl mr-2" />
-              <span className="text-xl font-bold text-white tracking-wider">TradeJournal</span>
+              <span className="text-xl font-bold tracking-wider text-white [html:not(.dark)_&]:text-slate-800">TradeJournal</span>
             </Link>
           </div>
           
           <div className="flex items-center space-x-4">
-            <Link to="/gallery" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+            <Link to="/gallery" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                           [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:text-slate-900">
               Public Gallery
             </Link>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-300
+                         bg-gray-700/50 hover:bg-gray-700 text-gray-400 hover:text-white
+                         [html:not(.dark)_&]:bg-slate-100 [html:not(.dark)_&]:hover:bg-slate-200
+                         [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-800"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? <FiSun className="w-4 h-4" /> : <FiMoon className="w-4 h-4" />}
+            </button>
             
             {user ? (
               <Link
@@ -31,7 +48,8 @@ const PublicNavbar = () => {
               </Link>
             ) : (
               <>
-                <Link to="/login" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                <Link to="/login" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                             [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:text-slate-900">
                   Log in
                 </Link>
                 <Link

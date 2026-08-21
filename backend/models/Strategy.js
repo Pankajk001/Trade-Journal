@@ -15,8 +15,13 @@ const strategySchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    rules: {
-      type: String, // Can be rich text or bullet points stored as string
+
+    chartingProcess: {
+      type: String,
+      required: true,
+    },
+    entryCriteria: {
+      type: String,
       required: true,
     },
     status: {

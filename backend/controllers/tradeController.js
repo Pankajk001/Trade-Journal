@@ -9,14 +9,14 @@ const createTrade = async (req, res, next) => {
 
     // Handle image uploads if they exist in the request
     if (req.files) {
-      if (req.files['screenshotBeforeEntry']) {
-        tradeData.screenshotBeforeEntry = req.files['screenshotBeforeEntry'][0].path;
+      if (req.files['screenshotHTF']) {
+        tradeData.screenshotHTF = req.files['screenshotHTF'][0].path;
       }
-      if (req.files['screenshotDuringTrade']) {
-        tradeData.screenshotDuringTrade = req.files['screenshotDuringTrade'][0].path;
+      if (req.files['screenshotMTF']) {
+        tradeData.screenshotMTF = req.files['screenshotMTF'][0].path;
       }
-      if (req.files['screenshotAfterExit']) {
-        tradeData.screenshotAfterExit = req.files['screenshotAfterExit'][0].path;
+      if (req.files['screenshotLTF']) {
+        tradeData.screenshotLTF = req.files['screenshotLTF'][0].path;
       }
     }
 
@@ -157,14 +157,14 @@ const updateTrade = async (req, res, next) => {
 
       // Handle image updates
       if (req.files) {
-        if (req.files['screenshotBeforeEntry']) {
-          updateData.screenshotBeforeEntry = req.files['screenshotBeforeEntry'][0].path;
+        if (req.files['screenshotHTF']) {
+          updateData.screenshotHTF = req.files['screenshotHTF'][0].path;
         }
-        if (req.files['screenshotDuringTrade']) {
-          updateData.screenshotDuringTrade = req.files['screenshotDuringTrade'][0].path;
+        if (req.files['screenshotMTF']) {
+          updateData.screenshotMTF = req.files['screenshotMTF'][0].path;
         }
-        if (req.files['screenshotAfterExit']) {
-          updateData.screenshotAfterExit = req.files['screenshotAfterExit'][0].path;
+        if (req.files['screenshotLTF']) {
+          updateData.screenshotLTF = req.files['screenshotLTF'][0].path;
         }
       }
 

@@ -4,13 +4,16 @@ import App from './App.jsx'
 import './index.css'
 import { AuthProvider } from './context/AuthContext'
 import { TradeProvider } from './context/TradeContext'
+import { ThemeProvider } from './context/ThemeContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthProvider>
-      <TradeProvider>
-        <App />
-      </TradeProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <TradeProvider>
+          <App />
+        </TradeProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>,
 )

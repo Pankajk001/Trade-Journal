@@ -14,9 +14,9 @@ const upload = require('../middleware/uploadMiddleware');
 
 // Define fields for multer
 const cpUpload = upload.fields([
-  { name: 'screenshotBeforeEntry', maxCount: 1 },
-  { name: 'screenshotDuringTrade', maxCount: 1 },
-  { name: 'screenshotAfterExit', maxCount: 1 }
+  { name: 'screenshotHTF', maxCount: 1 },
+  { name: 'screenshotMTF', maxCount: 1 },
+  { name: 'screenshotLTF', maxCount: 1 }
 ]);
 
 // Public route (must be before /:id so 'public' isn't treated as an ID)

@@ -50,13 +50,14 @@ const getStrategies = async (req, res, next) => {
 // @access  Private
 const createStrategy = async (req, res, next) => {
   try {
-    const { name, description, rules, status } = req.body;
+    const { name, description, chartingProcess, entryCriteria, status } = req.body;
 
     const strategy = await Strategy.create({
       user: req.user._id,
       name,
       description,
-      rules,
+      chartingProcess,
+      entryCriteria,
       status: status || 'Testing',
     });
 
