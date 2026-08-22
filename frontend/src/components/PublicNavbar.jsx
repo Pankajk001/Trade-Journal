@@ -10,14 +10,15 @@ const PublicNavbar = () => {
 
   return (
     <nav className="border-b transition-colors duration-300
-                    bg-gray-900 border-gray-800
+                    bg-[#060606] border-gray-900
                     [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center text-orange-500 hover:text-orange-400 transition-colors">
-              <FiTrendingUp className="text-2xl mr-2" />
-              <span className="text-xl font-bold tracking-wider text-white [html:not(.dark)_&]:text-slate-800">TradeJournal</span>
+            <Link to="/" className="flex flex-col items-center justify-center hover:opacity-80 transition-opacity mt-1">
+              <span className="text-white [html:not(.dark)_&]:text-slate-900 font-black text-lg leading-none tracking-widest uppercase">TRADE</span>
+              <div className="w-[110%] h-[3px] bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)] my-[3px] rounded-full"></div>
+              <span className="text-white [html:not(.dark)_&]:text-slate-900 font-black text-lg leading-none tracking-widest uppercase">JOURNAL</span>
             </Link>
           </div>
           

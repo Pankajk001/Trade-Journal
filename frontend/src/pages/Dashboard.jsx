@@ -55,8 +55,8 @@ const Dashboard = () => {
       {/* Middle Row: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Equity Curve */}
-        <div className="lg:col-span-2 bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent">
-          <h2 className="text-lg font-semibold text-white mb-6">Equity Curve</h2>
+        <div className="lg:col-span-2 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent">
+          <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-6">Equity Curve</h2>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stats.equityCurve} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -71,9 +71,9 @@ const Dashboard = () => {
                   type="monotone" 
                   dataKey="equity" 
                   stroke="#3B82F6" 
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#3B82F6', strokeWidth: 2 }}
-                  activeDot={{ r: 8 }} 
+                  strokeWidth={2}
+                  dot={{ r: 2, fill: '#3B82F6', strokeWidth: 1 }}
+                  activeDot={{ r: 5 }} 
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -81,8 +81,8 @@ const Dashboard = () => {
         </div>
 
         {/* Win/Loss Pie Chart */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent flex flex-col">
-          <h2 className="text-lg font-semibold text-white mb-6">Win/Loss Distribution</h2>
+        <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent flex flex-col">
+          <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-6">Win/Loss Distribution</h2>
           <div className="flex-1 min-h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -111,17 +111,17 @@ const Dashboard = () => {
       </div>
 
       {/* Bottom Row: Recent Trades */}
-      <div className="bg-gray-800 rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-hidden">
-        <div className="p-6 border-b border-gray-700 flex justify-between items-center mb-4 px-2">
-          <h2 className="text-xl font-bold text-white">Recent Trades</h2>
+      <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-hidden">
+        <div className="p-6 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 flex justify-between items-center mb-4 px-2">
+          <h2 className="text-xl font-bold text-white [html:not(.dark)_&]:text-slate-900">Recent Trades</h2>
           <Link to="/dashboard/journal" className="text-orange-500 hover:text-orange-400 text-sm">View All</Link>
         </div>
         <div className="overflow-x-auto">
           {stats.recentTrades.length === 0 ? (
             <div className="p-6 text-center text-gray-400">No recent trades to display.</div>
           ) : (
-            <table className="w-full text-left text-gray-300">
-              <thead className="bg-gray-900 text-gray-400 text-sm uppercase">
+            <table className="w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600">
+              <thead className="bg-[#060606] [html:not(.dark)_&]:bg-slate-50 text-gray-400 [html:not(.dark)_&]:text-slate-500 text-sm uppercase">
                 <tr>
                   <th className="px-6 py-4 font-medium">Date</th>
                   <th className="px-6 py-4 font-medium">Pair</th>
@@ -130,18 +130,18 @@ const Dashboard = () => {
                   <th className="px-6 py-4 font-medium">P/L</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-gray-700 [html:not(.dark)_&]:divide-slate-200">
                 {stats.recentTrades.map((trade) => (
-                  <tr key={trade._id} className="hover:bg-gray-700/30 transition-colors">
+                  <tr key={trade._id} className="hover:bg-gray-700/30 [html:not(.dark)_&]:hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">{format(new Date(trade.date), 'MMM dd, yyyy')}</td>
-                    <td className="px-6 py-4 font-medium text-white">{trade.pair}</td>
+                    <td className="px-6 py-4 font-medium text-white [html:not(.dark)_&]:text-slate-900">{trade.pair}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded text-xs ${trade.direction === 'Long' ? 'bg-gray-800 text-green-400' : 'bg-gray-800 text-red-400'}`}>
+                      <span className={`px-2 py-1 rounded text-xs ${trade.direction === 'Long' ? 'bg-[#060606] text-green-400 [html:not(.dark)_&]:bg-green-50 [html:not(.dark)_&]:text-green-600' : 'bg-[#060606] text-red-400 [html:not(.dark)_&]:bg-red-50 [html:not(.dark)_&]:text-red-600'}`}>
                         {trade.direction}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded text-xs ${trade.winLoss === 'Win' ? 'bg-gray-800 text-green-400' : trade.winLoss === 'Loss' ? 'bg-gray-800 text-red-400' : 'bg-gray-500/10 text-gray-400'}`}>
+                      <span className={`px-2 py-1 rounded text-xs ${trade.winLoss === 'Win' ? 'bg-[#060606] text-green-400' : trade.winLoss === 'Loss' ? 'bg-[#060606] text-red-400' : 'bg-[#060606] text-gray-400'}`}>
                         {trade.winLoss}
                       </span>
                     </td>

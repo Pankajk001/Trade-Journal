@@ -7,6 +7,7 @@ const mistakeSchema = mongoose.Schema(
       required: true,
       ref: 'User',
     },
+    
     title: {
       type: String,
       required: true,

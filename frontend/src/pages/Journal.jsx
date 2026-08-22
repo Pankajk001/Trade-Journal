@@ -28,18 +28,18 @@ const Journal = () => {
       />
 
       {/* Filters & Search */}
-      <div className="bg-gray-800 p-4 rounded-xl shadow-2xl shadow-black/60 border border-transparent mb-6 flex flex-wrap gap-4">
+      <div className="bg-[#1c1c1c] p-4 rounded-xl shadow-2xl shadow-black/60 border border-transparent mb-6 flex flex-wrap gap-4">
         <input
           type="text"
           placeholder="Search by Pair or Strategy..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
+          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
         />
         <select
           value={winLoss}
           onChange={(e) => setWinLoss(e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
+          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
         >
           <option value="">All Results</option>
           <option value="Win">Win</option>
@@ -49,7 +49,7 @@ const Journal = () => {
         <select
           value={session}
           onChange={(e) => setSession(e.target.value)}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
+          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
         >
           <option value="">All Sessions</option>
           <option value="London">London</option>
@@ -59,14 +59,14 @@ const Journal = () => {
       </div>
 
       {/* Trades Table */}
-      <div className="bg-gray-800 rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-x-auto">
+      <div className="bg-[#1c1c1c] rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center text-gray-400">Loading trades...</div>
         ) : trades.length === 0 ? (
           <div className="p-8 text-center text-gray-400">No trades found.</div>
         ) : (
           <table className="w-full text-left text-gray-300">
-            <thead className="bg-gray-900 text-gray-400 text-sm uppercase">
+            <thead className="bg-[#060606] text-gray-400 text-sm uppercase">
               <tr>
                 <th className="px-6 py-4 font-medium">Date</th>
                 <th className="px-6 py-4 font-medium">Pair</th>
@@ -83,14 +83,14 @@ const Journal = () => {
                   <td className="px-6 py-4">{format(new Date(trade.date), 'MMM dd, yyyy')}</td>
                   <td className="px-6 py-4 font-medium text-white">{trade.pair}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-xs ${trade.direction === 'Long' ? 'bg-gray-800 text-green-400' : 'bg-gray-800 text-red-400'}`}>
+                    <span className={`px-2 py-1 rounded text-xs ${trade.direction === 'Long' ? 'bg-[#1c1c1c] text-green-400' : 'bg-[#1c1c1c] text-red-400'}`}>
                       {trade.direction}
                     </span>
                   </td>
                   <td className="px-6 py-4">{trade.strategyName}</td>
                   <td className="px-6 py-4">{trade.riskRewardRatio}R</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-xs ${trade.winLoss === 'Win' ? 'bg-gray-800 text-green-400' : trade.winLoss === 'Loss' ? 'bg-gray-800 text-red-400' : 'bg-gray-500/10 text-gray-400'}`}>
+                    <span className={`px-2 py-1 rounded text-xs ${trade.winLoss === 'Win' ? 'bg-[#1c1c1c] text-green-400' : trade.winLoss === 'Loss' ? 'bg-[#1c1c1c] text-red-400' : 'bg-gray-500/10 text-gray-400'}`}>
                       {trade.winLoss}
                     </span>
                   </td>
@@ -116,7 +116,7 @@ const Journal = () => {
               className={`px-4 py-2 rounded-lg ${
                 x + 1 === page
                   ? 'bg-orange-600 text-white'
-                  : 'bg-gray-800 shadow-2xl shadow-black/60 border border-transparent text-gray-400 hover:bg-gray-700'
+                  : 'bg-[#1c1c1c] shadow-2xl shadow-black/60 border border-transparent text-gray-400 hover:bg-gray-700'
               }`}
             >
               {x + 1}

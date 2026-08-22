@@ -8,7 +8,7 @@ const PageHeader = ({ title, buttonText, buttonLink, buttonAction, backLink }) =
           <Link 
             to={backLink}
             className="w-10 h-10 flex items-center justify-center rounded-full border transition-colors shadow-sm
-                       bg-gray-800 border-gray-700/50 text-gray-400 hover:text-white hover:bg-gray-700
+                       bg-[#1c1c1c] border-gray-700/50 text-gray-400 hover:text-white hover:bg-gray-700
                        [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-800 [html:not(.dark)_&]:hover:bg-slate-100"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

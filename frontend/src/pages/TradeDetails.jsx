@@ -58,7 +58,7 @@ const TradeDetails = () => {
         </div>
         <button
           onClick={handleDelete}
-          className="flex items-center gap-2 bg-gray-800 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-[#1c1c1c] hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg transition-colors"
         >
           <FiTrash2 /> Delete Trade
         </button>
@@ -67,7 +67,7 @@ const TradeDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Stats */}
         <div className="space-y-6">
-          <div className="bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
+          <div className="bg-[#1c1c1c] p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
             <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Result</h2>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -85,7 +85,7 @@ const TradeDetails = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
+          <div className="bg-[#1c1c1c] p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
             <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Setup Details</h2>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -103,7 +103,7 @@ const TradeDetails = () => {
             </div>
           </div>
           
-          <div className="bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
+          <div className="bg-[#1c1c1c] p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
             <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Pricing</h2>
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -124,22 +124,22 @@ const TradeDetails = () => {
 
         {/* Right Column: Review & Gallery */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
+          <div className="bg-[#1c1c1c] p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
             <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Journal Review</h2>
             
             <div className="mb-4">
               <h3 className="text-gray-400 text-sm mb-1">Description</h3>
-              <p className="text-white bg-gray-900 p-4 rounded-lg">{trade.tradeDescription}</p>
+              <p className="text-white bg-[#060606] p-4 rounded-lg">{trade.tradeDescription}</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <h3 className="text-gray-400 text-sm mb-1">Emotions Before Entry</h3>
-                <p className="text-white bg-gray-900 p-3 rounded-lg">{trade.emotionsBeforeEntry}</p>
+                <p className="text-white bg-[#060606] p-3 rounded-lg">{trade.emotionsBeforeEntry}</p>
               </div>
               <div>
                 <h3 className="text-gray-400 text-sm mb-1">Confidence (1-10)</h3>
-                <p className="text-white bg-gray-900 p-3 rounded-lg">{trade.confidenceLevel}</p>
+                <p className="text-white bg-[#060606] p-3 rounded-lg">{trade.confidenceLevel}</p>
               </div>
             </div>
 
@@ -163,7 +163,7 @@ const TradeDetails = () => {
             </div>
           </div>
 
-          <div className="bg-gray-800 p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
+          <div className="bg-[#1c1c1c] p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
             <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Screenshots</h2>
             {images.length > 0 ? (
               <ImageGallery images={images} />

@@ -13,7 +13,7 @@ const AdSlot = ({ adUnitId, width, height }) => {
   return (
     <div 
       style={{ width, height }} 
-      className="bg-gray-800/30 border border-gray-700 border-dashed rounded flex flex-col items-center justify-center text-gray-500 text-xs shadow-inner"
+      className="bg-[#1c1c1c]/30 border border-gray-700 border-dashed rounded flex flex-col items-center justify-center text-gray-500 text-xs shadow-inner"
     >
       <span className="font-semibold text-gray-400 mb-1">Advertisement Space</span>
       <span>{width} x {height}</span>

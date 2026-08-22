@@ -25,21 +25,21 @@ const Gallery = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col relative">
+    <div className="min-h-screen bg-[#060606] flex flex-col relative">
       <PublicNavbar />
       
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">Public Trade Gallery</h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">Explore trades shared by our community. Learn from their setups, wins, losses, and psychology to improve your own trading.</p>
+          <h1 className="text-3xl md:text-5xl font-bold text-white [html:not(.dark)_&]:text-slate-900 mb-4">Public Trade Gallery</h1>
+          <p className="text-gray-400 [html:not(.dark)_&]:text-slate-600 max-w-2xl mx-auto">Explore trades shared by our community. Learn from their setups, wins, losses, and psychology to improve your own trading.</p>
         </div>
 
         {loading ? (
           <div className="text-center text-gray-500 py-20">Loading public trades...</div>
         ) : publicTrades.length === 0 ? (
-          <div className="text-center bg-gray-800 shadow-2xl shadow-black/60 border border-transparent rounded-xl p-10 max-w-2xl mx-auto">
-            <h3 className="text-xl text-white font-medium mb-2">No public trades yet</h3>
-            <p className="text-gray-400">Be the first to share your trading journey by making a trade public!</p>
+          <div className="text-center bg-[#1c1c1c] [html:not(.dark)_&]:bg-white shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 rounded-xl p-10 max-w-2xl mx-auto">
+            <h3 className="text-xl text-white [html:not(.dark)_&]:text-slate-900 font-medium mb-2">No public trades yet</h3>
+            <p className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Be the first to share your trading journey by making a trade public!</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -47,22 +47,22 @@ const Gallery = () => {
               <div 
                 key={trade._id} 
                 onClick={() => setSelectedTrade(trade)}
-                className="bg-gray-800 rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] transition-all duration-300 cursor-pointer"
+                className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white rounded-xl shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm overflow-hidden flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] [html:not(.dark)_&]:hover:shadow-lg transition-all duration-300 cursor-pointer"
               >
                 
                 {/* Header: User & Date */}
-                <div className="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-900">
+                <div className="p-4 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 flex justify-between items-center bg-[#060606] [html:not(.dark)_&]:bg-slate-50">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-sm">
                       {trade.user?.name ? trade.user.name.charAt(0).toUpperCase() : 'A'}
                     </div>
-                    <span className="text-sm font-medium text-white">{trade.user?.name || 'Anonymous'}</span>
+                    <span className="text-sm font-medium text-white [html:not(.dark)_&]:text-slate-900">{trade.user?.name || 'Anonymous'}</span>
                   </div>
                   <span className="text-xs text-gray-500">{format(new Date(trade.date), 'MMM dd, yyyy')}</span>
                 </div>
 
                 {/* Trade Image */}
-                <div className="h-48 w-full bg-gray-900 relative">
+                <div className="h-48 w-full bg-[#060606] [html:not(.dark)_&]:bg-slate-100 relative">
                   {trade.screenshotBeforeEntry || trade.screenshotAfterExit ? (
                     <img 
                       src={trade.screenshotBeforeEntry || trade.screenshotAfterExit} 
@@ -92,18 +92,18 @@ const Gallery = () => {
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-bold text-white">{trade.pair}</h3>
-                      <p className="text-xs text-gray-400">{trade.strategyName}</p>
+                      <h3 className="text-xl font-bold text-white [html:not(.dark)_&]:text-slate-900">{trade.pair}</h3>
+                      <p className="text-xs text-gray-400 [html:not(.dark)_&]:text-slate-600">{trade.strategyName}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-300 font-medium">{trade.rMultiple}R</p>
+                      <p className="text-sm text-gray-300 [html:not(.dark)_&]:text-slate-700 font-medium">{trade.rMultiple}R</p>
                       <p className="text-xs text-gray-500">{trade.session}</p>
                     </div>
                   </div>
 
-                  <div className="mt-auto pt-4 border-t border-gray-700">
+                  <div className="mt-auto pt-4 border-t border-gray-700 [html:not(.dark)_&]:border-slate-200">
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-1 font-semibold">Lessons Learned</p>
-                    <p className="text-sm text-gray-300 line-clamp-3">{trade.lessonsLearned || trade.tradeDescription || 'No description provided.'}</p>
+                    <p className="text-sm text-gray-300 [html:not(.dark)_&]:text-slate-700 line-clamp-3">{trade.lessonsLearned || trade.tradeDescription || 'No description provided.'}</p>
                   </div>
                 </div>
               </div>
@@ -116,10 +116,10 @@ const Gallery = () => {
       {selectedTrade && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
           {/* Scrollable Container */}
-          <div className="bg-gray-900 w-full max-w-5xl rounded-2xl border border-gray-700 shadow-2xl relative max-h-[90vh] overflow-y-auto p-6">
+          <div className="bg-[#060606] [html:not(.dark)_&]:bg-slate-50 w-full max-w-5xl rounded-2xl border border-gray-700 [html:not(.dark)_&]:border-slate-200 shadow-2xl relative max-h-[90vh] overflow-y-auto p-6">
             <button 
               onClick={() => setSelectedTrade(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-800 hover:bg-gray-700 rounded-full p-2 transition-colors z-10"
+              className="absolute top-4 right-4 text-gray-400 [html:not(.dark)_&]:text-slate-500 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white hover:bg-gray-700 [html:not(.dark)_&]:hover:bg-slate-200 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-slate-300 rounded-full p-2 transition-colors z-10"
             >
               <FiX size={24} />
             </button>

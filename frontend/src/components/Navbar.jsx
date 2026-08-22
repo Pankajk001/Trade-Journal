@@ -14,17 +14,28 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
-    <nav className="bg-gray-800 dark:bg-gray-800 border-b border-gray-700 dark:border-gray-700
+    <nav className="bg-[#1c1c1c] dark:bg-[#1c1c1c] border-b border-gray-800/80 dark:border-gray-800/80
                     light:bg-white light:border-slate-200 h-16 flex items-center justify-between px-6
                     transition-colors duration-300
                     [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm">
       <div className="flex items-center">
-        <Link to="/" className="text-xl font-bold tracking-wider text-white [html:not(.dark)_&]:text-slate-800 transition-colors duration-300">
-          TRADE<span className="text-orange-500">JOURNAL</span>
+        <Link to="/" className="flex flex-col items-center justify-center hover:opacity-80 transition-opacity mt-1">
+          <span className="text-white [html:not(.dark)_&]:text-slate-900 font-black text-lg leading-none tracking-widest uppercase">TRADE</span>
+          <div className="w-[110%] h-[3px] bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)] my-[3px] rounded-full"></div>
+          <span className="text-white [html:not(.dark)_&]:text-slate-900 font-black text-lg leading-none tracking-widest uppercase">JOURNAL</span>
         </Link>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-5">
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
@@ -38,18 +49,31 @@ const Navbar = () => {
         </button>
 
         {user ? (
-          <>
-            <span className="text-gray-300 [html:not(.dark)_&]:text-slate-600 transition-colors duration-300 text-sm font-medium">
-              Welcome, {user.name}
-            </span>
+          <div className="flex items-center gap-4 border-l border-gray-700/50 [html:not(.dark)_&]:border-slate-300 pl-5 ml-1">
+            {user.profilePic ? (
+              <img 
+                src={user.profilePic} 
+                alt={user.name} 
+                className="w-9 h-9 rounded-full object-cover shadow-lg shadow-orange-500/20 border border-orange-400/30"
+                title={user.name}
+              />
+            ) : (
+              <div 
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-500/20 border border-orange-400/30"
+                title={user.name}
+              >
+                {getInitials(user.name)}
+              </div>
+            )}
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300
                          [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-800"
+              title="Logout"
             >
-              <FiLogOut /> Logout
+              <FiLogOut className="w-5 h-5" />
             </button>
-          </>
+          </div>
         ) : (
           <>
             <Link to="/login"

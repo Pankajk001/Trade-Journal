@@ -49,7 +49,7 @@ const NumberedListInput = ({ label, name, value = '', onChange, placeholder = "E
               transition={{ duration: 0.2 }}
               className="flex items-start gap-3"
             >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-xs text-gray-400 font-bold mt-1 shadow-inner">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1c1c1c] border border-gray-700 flex items-center justify-center text-xs text-gray-400 font-bold mt-1 shadow-inner">
                 {index + 1}
               </div>
               <input
@@ -57,7 +57,7 @@ const NumberedListInput = ({ label, name, value = '', onChange, placeholder = "E
                 value={item}
                 onChange={(e) => handleItemChange(index, e.target.value)}
                 placeholder={placeholder}
-                className="flex-1 bg-gray-900/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-orange-500 focus:bg-gray-900 transition-colors placeholder-gray-600"
+                className="flex-1 bg-[#060606]/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-orange-500 focus:bg-[#060606] transition-colors placeholder-gray-600"
               />
               <button
                 type="button"

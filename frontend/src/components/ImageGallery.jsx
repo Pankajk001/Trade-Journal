@@ -10,11 +10,11 @@ const ImageGallery = ({ images }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {images.map((img, index) => (
           <div key={index} className="relative group cursor-pointer" onClick={() => setSelectedImage(img.url)}>
-            <img src={img.url} alt={img.title} className="w-full h-48 object-cover rounded-lg border border-gray-700" />
+            <img src={img.url} alt={img.title} className="w-full h-48 object-cover rounded-lg border border-gray-700 [html:not(.dark)_&]:border-slate-300" />
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
               <FiZoomIn className="text-white text-3xl" />
             </div>
-            <p className="text-center text-gray-400 mt-2 text-sm">{img.title}</p>
+            <p className="text-center text-gray-400 [html:not(.dark)_&]:text-slate-600 mt-2 text-sm">{img.title}</p>
           </div>
         ))}
       </div>

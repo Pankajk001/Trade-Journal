@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 min-h-[calc(100vh-4rem)] hidden md:block transition-colors duration-300
-                      bg-gray-800 border-r border-gray-700
+                      bg-[#1c1c1c] border-r border-gray-800/80
                       [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm">
       <nav className="p-4 space-y-1">
         {navItems.map((item) => (

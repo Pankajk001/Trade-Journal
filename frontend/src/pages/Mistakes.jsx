@@ -70,7 +70,7 @@ const Mistakes = () => {
       {loading ? (
         <div className="text-gray-400 text-center py-10">Loading Library...</div>
       ) : mistakes.length === 0 ? (
-        <div className="text-gray-400 text-center py-10 bg-gray-800 rounded-xl shadow-2xl shadow-black/60 border border-transparent">
+        <div className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-center py-10 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl shadow-2xl shadow-black/60 border border-transparent">
           Your library is empty. Click "+ Add Mistake" to start logging common errors.
         </div>
       ) : (
@@ -79,7 +79,7 @@ const Mistakes = () => {
             <div 
               key={mistake._id} 
               onClick={() => setSelectedMistake(mistake)}
-              className="bg-gray-800 rounded-xl shadow-2xl shadow-black/60 border border-transparent p-6 flex flex-col h-full relative group shadow-sm transition-transform hover:scale-[1.02] cursor-pointer"
+              className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-xl shadow-2xl shadow-black/60 border border-transparent p-6 flex flex-col h-full relative group shadow-sm transition-transform hover:scale-[1.02] cursor-pointer"
             >
               <button 
                 onClick={(e) => {
@@ -92,16 +92,16 @@ const Mistakes = () => {
               </button>
               
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">{mistake.title}</h3>
-                <span className="bg-gray-800 text-red-400 text-xs px-2 py-1 rounded border border-red-500/20">
+                <h3 className="text-xl font-bold text-white [html:not(.dark)_&]:text-slate-900">{mistake.title}</h3>
+                <span className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-red-50 text-red-400 [html:not(.dark)_&]:text-red-600 [html:not(.dark)_&]:border-red-200 text-xs px-2 py-1 rounded border border-red-500/20">
                   Freq: {mistake.frequency}
                 </span>
               </div>
               
-              <div className="space-y-4 flex-1 mt-4 border-t border-gray-700/50 pt-4">
+              <div className="space-y-4 flex-1 mt-4 border-t border-gray-700/50 [html:not(.dark)_&]:border-slate-200 pt-4">
                 <div>
-                  <h4 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-1">Description</h4>
-                  <p className="text-gray-300 text-sm line-clamp-3">{mistake.description}</p>
+                  <h4 className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Description</h4>
+                  <p className="text-gray-300 [html:not(.dark)_&]:text-slate-700 text-sm line-clamp-3">{mistake.description}</p>
                 </div>
               </div>
             </div>
@@ -124,12 +124,12 @@ const Mistakes = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-              className="bg-gray-800 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-gray-700/50 w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-gray-700/50 w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-6 border-b border-gray-700/50 bg-gray-800/50 flex justify-between items-center">
+              <div className="p-6 border-b border-gray-700/50 [html:not(.dark)_&]:border-slate-200 bg-[#1c1c1c]/50 [html:not(.dark)_&]:bg-slate-50 flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">Add New Mistake</h2>
-                  <p className="text-sm text-gray-500 mt-1">Log an error to prevent it from happening again.</p>
+                  <h2 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 [html:not(.dark)_&]:from-slate-900 [html:not(.dark)_&]:to-slate-700">Add New Mistake</h2>
+                  <p className="text-sm text-gray-500 [html:not(.dark)_&]:text-slate-500 mt-1">Log an error to prevent it from happening again.</p>
                 </div>
                 <button 
                   onClick={() => setIsModalOpen(false)} 
@@ -139,8 +139,8 @@ const Mistakes = () => {
                 </button>
               </div>
               
-              <div className="p-5 overflow-y-auto custom-scrollbar">
-                <form id="mistake-form" onSubmit={handleSubmit}>
+              <div className="p-8 overflow-y-auto custom-scrollbar">
+                <form id="mistake-form" onSubmit={handleSubmit} className="space-y-6">
                   <FormInput 
                     label="Mistake Title (e.g. FOMO Entry)" 
                     name="title" 
@@ -148,46 +148,52 @@ const Mistakes = () => {
                     onChange={handleChange} 
                     required 
                   />
-                  <FormInput 
-                    type="textarea"
-                    label="Description" 
-                    name="description" 
-                    value={formData.description} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                  <FormInput 
-                    type="textarea"
-                    label="Impact (How did it affect the trade?)" 
-                    name="impact" 
-                    value={formData.impact} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                  <FormInput 
-                    type="textarea"
-                    label="Solution" 
-                    name="solution" 
-                    value={formData.solution} 
-                    onChange={handleChange} 
-                    required 
-                  />
-                  <FormInput 
-                    type="textarea"
-                    label="How to Avoid (Actionable steps)" 
-                    name="howToAvoid" 
-                    value={formData.howToAvoid} 
-                    onChange={handleChange} 
-                    required 
-                  />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormInput 
+                      type="textarea"
+                      label="Description (What happened?)" 
+                      name="description" 
+                      value={formData.description} 
+                      onChange={handleChange} 
+                      required 
+                    />
+                    <FormInput 
+                      type="textarea"
+                      label="Impact (How did it affect the trade?)" 
+                      name="impact" 
+                      value={formData.impact} 
+                      onChange={handleChange} 
+                      required 
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormInput 
+                      type="textarea"
+                      label="Solution (How to fix this?)" 
+                      name="solution" 
+                      value={formData.solution} 
+                      onChange={handleChange} 
+                      required 
+                    />
+                    <FormInput 
+                      type="textarea"
+                      label="How to Avoid (Actionable steps)" 
+                      name="howToAvoid" 
+                      value={formData.howToAvoid} 
+                      onChange={handleChange} 
+                      required 
+                    />
+                  </div>
                 </form>
               </div>
               
-              <div className="p-6 border-t border-gray-700/50 bg-gray-800/30 flex justify-end gap-4">
+              <div className="p-6 border-t border-gray-700/50 [html:not(.dark)_&]:border-slate-200 bg-[#1c1c1c]/30 [html:not(.dark)_&]:bg-slate-50 flex justify-end gap-4">
                 <button 
                   type="button" 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all"
+                  className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:text-slate-900 [html:not(.dark)_&]:hover:bg-slate-200 hover:bg-gray-700/50 rounded-lg transition-all"
                 >
                   Cancel
                 </button>
@@ -218,13 +224,13 @@ const Mistakes = () => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-              className="bg-gray-800 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-gray-700/50 w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]"
+              className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-gray-700/50 w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-6 border-b border-gray-700/50 bg-gray-800/50 flex justify-between items-center">
+              <div className="p-6 border-b border-gray-700/50 [html:not(.dark)_&]:border-slate-200 bg-[#1c1c1c]/50 [html:not(.dark)_&]:bg-slate-50 flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-extrabold text-white">{selectedMistake.title}</h2>
+                  <h2 className="text-2xl font-extrabold text-white [html:not(.dark)_&]:text-slate-900">{selectedMistake.title}</h2>
                   <div className="flex items-center gap-3 mt-2">
-                    <span className="bg-gray-800 text-red-400 text-xs px-2 py-1 rounded border border-red-500/20">
+                    <span className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-red-50 text-red-400 [html:not(.dark)_&]:text-red-600 [html:not(.dark)_&]:border-red-200 text-xs px-2 py-1 rounded border border-red-500/20">
                       Frequency: {selectedMistake.frequency}
                     </span>
                   </div>
@@ -265,7 +271,7 @@ const Mistakes = () => {
                 </div>
               </div>
               
-              <div className="p-6 border-t border-gray-700/50 bg-gray-900 flex justify-end">
+              <div className="p-6 border-t border-gray-700/50 bg-[#060606] flex justify-end">
                 <button 
                   onClick={() => setSelectedMistake(null)}
                   className="px-6 py-2.5 bg-gray-700/50 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors"

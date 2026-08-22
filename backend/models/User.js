@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
   isPremium: {
     type: Boolean,
     default: false
+  },
+  profilePic: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true

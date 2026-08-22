@@ -28,7 +28,8 @@ const registerUser = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        isPremium: user.isPremium
+        isPremium: user.isPremium,
+        profilePic: user.profilePic
       });
     } else {
       res.status(400);
@@ -55,7 +56,8 @@ const loginUser = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        isPremium: user.isPremium
+        isPremium: user.isPremium,
+        profilePic: user.profilePic
       });
     } else {
       res.status(401);
@@ -90,7 +92,8 @@ const getUserProfile = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        isPremium: user.isPremium
+        isPremium: user.isPremium,
+        profilePic: user.profilePic
       });
     } else {
       res.status(404);
@@ -111,6 +114,10 @@ const updateUserProfile = async (req, res, next) => {
     if (user) {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
+      
+      if (req.body.profilePic !== undefined) {
+        user.profilePic = req.body.profilePic;
+      }
 
       if (req.body.password) {
         user.password = req.body.password;
@@ -123,7 +130,8 @@ const updateUserProfile = async (req, res, next) => {
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role,
-        isPremium: updatedUser.isPremium
+        isPremium: updatedUser.isPremium,
+        profilePic: updatedUser.profilePic
       });
     } else {
       res.status(404);

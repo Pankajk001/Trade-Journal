@@ -1,26 +1,30 @@
 import { useEffect, useRef } from 'react';
 import { createChart, CandlestickSeries } from 'lightweight-charts';
+import { useTheme } from '../../context/ThemeContext';
 
-const MockChart = () => {
+const MockChart = ({ className = "w-full h-full min-h-[300px]" }) => {
   const chartContainerRef = useRef(null);
   const chartRef = useRef(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
     // Create chart
     const chart = createChart(chartContainerRef.current, {
+      autoSize: true,
       layout: {
-        background: { type: 'solid', color: '#000000' }, // Pure pitch black
-        textColor: '#d1d4dc',
+        background: { type: 'solid', color: theme === 'dark' ? '#000000' : '#ffffff' },
+        textColor: theme === 'dark' ? '#d1d4dc' : '#334155',
+        attributionLogo: false,
       },
       grid: {
         vertLines: {
-          color: '#1e1e1e', // Faint grey lines matching image
-          style: 3, // Dashed line style
+          color: theme === 'dark' ? '#1e1e1e' : '#e2e8f0',
+          style: 3, 
         },
         horzLines: {
-          color: '#1e1e1e',
+          color: theme === 'dark' ? '#1e1e1e' : '#e2e8f0',
           style: 3,
         },
       },
@@ -30,12 +34,12 @@ const MockChart = () => {
         horzLine: { color: '#758696', width: 1, style: 3, labelBackgroundColor: '#758696' },
       },
       timeScale: {
-        borderColor: '#2a2e39',
+        borderColor: theme === 'dark' ? '#2a2e39' : '#e2e8f0',
         timeVisible: true,
         secondsVisible: false,
       },
       rightPriceScale: {
-        borderColor: '#2a2e39',
+        borderColor: theme === 'dark' ? '#2a2e39' : '#e2e8f0',
       },
       handleScroll: false, // Disable for landing page so it doesn't trap scroll
       handleScale: false,
@@ -98,7 +102,26 @@ const MockChart = () => {
     };
   }, []);
 
-  return <div ref={chartContainerRef} className="w-full h-full min-h-[300px]" />;
+  // Update colors when theme changes without recreating chart
+  useEffect(() => {
+    if (chartRef.current) {
+      chartRef.current.applyOptions({
+        layout: {
+          background: { type: 'solid', color: theme === 'dark' ? '#000000' : '#ffffff' },
+          textColor: theme === 'dark' ? '#d1d4dc' : '#334155',
+          attributionLogo: false,
+        },
+        grid: {
+          vertLines: { color: theme === 'dark' ? '#1e1e1e' : '#e2e8f0' },
+          horzLines: { color: theme === 'dark' ? '#1e1e1e' : '#e2e8f0' },
+        },
+        timeScale: { borderColor: theme === 'dark' ? '#2a2e39' : '#e2e8f0' },
+        rightPriceScale: { borderColor: theme === 'dark' ? '#2a2e39' : '#e2e8f0' }
+      });
+    }
+  }, [theme]);
+
+  return <div ref={chartContainerRef} className={className} />;
 };
 
 export default MockChart;
