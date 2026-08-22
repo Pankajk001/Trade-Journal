@@ -42,9 +42,9 @@ const TradeDetails = () => {
   if (!trade) return <div className="p-6 text-gray-400">Trade not found.</div>;
 
   const images = [
-    { url: trade.screenshotBeforeEntry, title: 'Before Entry' },
-    { url: trade.screenshotDuringTrade, title: 'During Trade' },
-    { url: trade.screenshotAfterExit, title: 'After Exit' }
+    { url: trade.screenshotHTF, title: 'HTF Chart' },
+    { url: trade.screenshotMTF, title: 'MTF Chart' },
+    { url: trade.screenshotLTF, title: 'LTF Chart' }
   ].filter(img => img.url); // filter out empty URLs if any
 
   return (
@@ -75,8 +75,10 @@ const TradeDetails = () => {
                 <span className={`font-medium ${trade.winLoss === 'Win' ? 'text-green-400' : 'text-red-400'}`}>{trade.winLoss}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Profit/Loss</span>
-                <span className={`font-medium ${trade.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>${trade.profitLoss}</span>
+                <span className="text-gray-400">Net PNL</span>
+                <span className={`font-medium ${trade.netPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {trade.netPnl >= 0 ? `+$${(trade.netPnl || 0).toFixed(2)}` : `-$${Math.abs(trade.netPnl || 0).toFixed(2)}`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">R Multiple</span>
@@ -92,9 +94,9 @@ const TradeDetails = () => {
                 <span className="text-gray-400">Strategy</span>
                 <span className="text-white">{trade.strategyName}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Setup</span>
-                <span className="text-white">{trade.setupName}</span>
+              <div className="flex justify-between items-start text-right">
+                <span className="text-gray-400">Confluences</span>
+                <span className="text-white max-w-[150px]">{trade.entryConfluences?.length > 0 ? trade.entryConfluences.join(', ') : 'None'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Session</span>
@@ -127,20 +129,40 @@ const TradeDetails = () => {
           <div className="bg-[#1c1c1c] p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent shadow-lg">
             <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Journal Review</h2>
             
-            <div className="mb-4">
-              <h3 className="text-gray-400 text-sm mb-1">Description</h3>
-              <p className="text-white bg-[#060606] p-4 rounded-lg">{trade.tradeDescription}</p>
-            </div>
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <h3 className="text-gray-400 text-sm mb-1">Emotions Before Entry</h3>
-                <p className="text-white bg-[#060606] p-3 rounded-lg">{trade.emotionsBeforeEntry}</p>
+                <h3 className="text-gray-400 text-sm mb-1">Entry Emotion</h3>
+                <p className="text-white bg-[#060606] p-3 rounded-lg border border-gray-800">{trade.entryEmotion || 'N/A'}</p>
               </div>
               <div>
-                <h3 className="text-gray-400 text-sm mb-1">Confidence (1-10)</h3>
-                <p className="text-white bg-[#060606] p-3 rounded-lg">{trade.confidenceLevel}</p>
+                <h3 className="text-gray-400 text-sm mb-1">Exit Emotion</h3>
+                <p className="text-white bg-[#060606] p-3 rounded-lg border border-gray-800">{trade.exitEmotion || 'N/A'}</p>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h3 className="text-gray-400 text-sm mb-1">Followed Plan?</h3>
+                <p className={`font-semibold p-3 rounded-lg border ${trade.followedPlan ? 'text-green-400 bg-green-500/10 border-green-500/20' : 'text-red-400 bg-red-500/10 border-red-500/20'}`}>
+                  {trade.followedPlan ? 'Yes' : 'No'}
+                </p>
+              </div>
+              {!trade.followedPlan && trade.intendedPlan && (
+                <div>
+                  <h3 className="text-gray-400 text-sm mb-1">Intended Plan</h3>
+                  <p className="text-white bg-[#060606] p-3 rounded-lg border border-gray-800">{trade.intendedPlan}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <h3 className="text-gray-400 text-sm mb-1">Trade Management</h3>
+              <p className="text-white bg-[#060606] p-4 rounded-lg border border-gray-800">{trade.tradeManagement || 'N/A'}</p>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-gray-400 text-sm mb-1">Note / Reflection</h3>
+              <p className="text-white bg-[#060606] p-4 rounded-lg border border-gray-800">{trade.noteReflection || 'N/A'}</p>
             </div>
 
             <div className="mb-4">

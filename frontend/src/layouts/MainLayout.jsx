@@ -8,11 +8,11 @@ const MainLayout = () => {
   const ADS_ENABLED = false;
 
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-300
+    <div className="h-screen flex flex-col transition-colors duration-300 overflow-hidden
                     bg-[#060606]
                     [html:not(.dark)_&]:bg-slate-100">
       <Navbar />
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Navigation */}
         <Sidebar />
         

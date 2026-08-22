@@ -12,12 +12,12 @@ mongoose.connect(process.env.MONGO_URI);
 
 const generateDummyTrades = (userId) => {
   const trades = [];
-  const pairs = ['EURUSD', 'GBPUSD', 'USDJPY', 'XAUUSD', 'US30'];
+  const pairs = ['EURUSD', 'GBPUSD', 'USDJPY', 'XAUUSD', 'BTCUSD', 'ETHUSD', 'US30', 'NAS100'];
   const directions = ['Long', 'Short'];
-  const buySells = ['Buy', 'Sell'];
-  const sessions = ['London', 'New York', 'Asian'];
+  const sessions = ['London', 'New York', 'Asia', 'Sydney'];
   const winLosses = ['Win', 'Loss', 'Breakeven'];
   const strategies = ['Breakout', 'Trend Following', 'Mean Reversion'];
+  const emotions = ['FOMO', 'Revenge Trading', 'Patient', 'Calm', 'Fearful', 'Greedy', 'Overconfident', 'Neutral'];
   
   let currentDate = new Date();
   currentDate.setDate(currentDate.getDate() - 30); // Start 30 days ago
@@ -28,8 +28,10 @@ const generateDummyTrades = (userId) => {
     if (currentDate > new Date()) currentDate = new Date(); // Don't go into future
     
     const winLoss = winLosses[Math.floor(Math.random() * winLosses.length)];
-    const profitLoss = winLoss === 'Win' ? Math.floor(Math.random() * 500) + 100 : winLoss === 'Loss' ? -(Math.floor(Math.random() * 200) + 50) : 0;
+    const netPnl = winLoss === 'Win' ? Math.floor(Math.random() * 500) + 100 : winLoss === 'Loss' ? -(Math.floor(Math.random() * 200) + 50) : 0;
     const rMultiple = winLoss === 'Win' ? (Math.random() * 2 + 1).toFixed(2) : winLoss === 'Loss' ? -1 : 0;
+    
+    const followedPlan = Math.random() > 0.3;
 
     trades.push({
       user: userId,
@@ -39,32 +41,37 @@ const generateDummyTrades = (userId) => {
       pair: pairs[Math.floor(Math.random() * pairs.length)],
       market: 'Forex',
       direction: directions[Math.floor(Math.random() * directions.length)],
-      buySell: buySells[Math.floor(Math.random() * buySells.length)],
       session: sessions[Math.floor(Math.random() * sessions.length)],
-      setupName: 'Standard Setup',
+      duration: `${Math.floor(Math.random() * 4) + 1} hrs`,
       strategyName: strategies[Math.floor(Math.random() * strategies.length)],
       entryPrice: 1.0500 + Math.random() * 0.05,
       stopLoss: 1.0450 + Math.random() * 0.02,
       takeProfit: 1.0600 + Math.random() * 0.02,
       riskPercentage: 1.5,
       lotSize: 0.5,
-      riskRewardRatio: 2.5,
       exitPrice: 1.0550 + Math.random() * 0.05,
-      profitLoss: profitLoss,
+      netPnl: netPnl,
+      profitLoss: netPnl,
+      fees: 2.50,
+      swap: -0.50,
       rMultiple: parseFloat(rMultiple),
       winLoss: winLoss,
-      emotionsBeforeEntry: 'Calm and focused',
-      confidenceLevel: Math.floor(Math.random() * 5) + 5,
-      tradeDescription: 'This is a dummy trade generated for testing purposes. Saw a clear breakout on the 15m timeframe.',
-      mistakesMade: winLoss === 'Loss' ? 'Entered slightly late' : 'None',
+      entryEmotion: emotions[Math.floor(Math.random() * emotions.length)],
+      exitEmotion: emotions[Math.floor(Math.random() * emotions.length)],
+      tradeManagement: 'Moved SL to BE at 1R',
+      noteReflection: 'This is a dummy trade reflecting the new fields. Waited patiently for setup.',
+      mistakesMade: winLoss === 'Loss' ? 'Added to Position too early' : 'None',
       lessonsLearned: 'Always wait for the candle to close',
       tags: ['dummy', 'test'],
       tradeStatus: 'Closed',
-      screenshotBeforeEntry: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg',
-      screenshotDuringTrade: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg',
-      screenshotAfterExit: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg',
+      screenshotHTF: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg',
+      screenshotMTF: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg',
+      screenshotLTF: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg',
       tradingViewLink: 'https://www.tradingview.com/',
-      isPublic: Math.random() > 0.5, // 50% chance of being public
+      isPublic: Math.random() > 0.5,
+      followedPlan: followedPlan,
+      intendedPlan: followedPlan ? '' : 'I wanted to wait for the 1hr close but got impatient.',
+      entryConfluences: ['RSI Divergence', 'Support/Resistance'],
     });
   }
   return trades;
@@ -78,11 +85,11 @@ const importData = async () => {
       process.exit(1);
     }
 
-    // Optional: Clear existing trades for this user before seeding
-    // await Trade.deleteMany({ user: user._id });
-    // await Mistake.deleteMany({ user: user._id });
-    // await Strategy.deleteMany({ user: user._id });
-    // await Note.deleteMany({ user: user._id });
+    // Clear existing data for this user before seeding
+    await Trade.deleteMany({ user: user._id });
+    await Mistake.deleteMany({ user: user._id });
+    await Strategy.deleteMany({ user: user._id });
+    await Note.deleteMany({ user: user._id });
 
     const dummyTrades = generateDummyTrades(user._id);
     await Trade.insertMany(dummyTrades);
@@ -96,9 +103,9 @@ const importData = async () => {
 
     // Dummy Strategies
     const dummyStrategies = [
-      { user: user._id, name: 'Breakout', description: 'Trading the breakout of a consolidation zone', rules: '1. Identify range. 2. Wait for candle close outside range. 3. Enter on retest.', status: 'Active' },
-      { user: user._id, name: 'Trend Following', description: 'Riding the trend using moving averages', rules: '1. Price above 50 EMA. 2. Pullback to 20 EMA. 3. Bullish engulfing candle.', status: 'Active' },
-      { user: user._id, name: 'Mean Reversion', description: 'Fading extreme moves', rules: '1. Price far from VWAP. 2. RSI divergence. 3. Reversal pattern.', status: 'Testing' },
+      { user: user._id, name: 'Breakout', description: 'Trading the breakout of a consolidation zone', entryCriteria: 'Price breaks resistance, Volume confirms breakout', chartingProcess: 'Mark key levels on 4H, wait for 15M breakout.', rules: '1. Identify range. 2. Wait for candle close outside range. 3. Enter on retest.', status: 'Active' },
+      { user: user._id, name: 'Trend Following', description: 'Riding the trend using moving averages', entryCriteria: 'Price above 50 EMA, Bullish engulfing on 20 EMA', chartingProcess: 'Determine trend on Daily, execute on 1H pullbacks.', rules: '1. Price above 50 EMA. 2. Pullback to 20 EMA. 3. Bullish engulfing candle.', status: 'Active' },
+      { user: user._id, name: 'Mean Reversion', description: 'Fading extreme moves', entryCriteria: 'RSI > 80 or < 20, Price far from VWAP', chartingProcess: 'Identify overextended moves on 5M, look for divergence.', rules: '1. Price far from VWAP. 2. RSI divergence. 3. Reversal pattern.', status: 'Testing' },
     ];
     await Strategy.insertMany(dummyStrategies);
 

@@ -1,6 +1,6 @@
 const FormInput = ({ label, name, type = "text", value, onChange, placeholder, required = false, min, max, step }) => {
   const baseClass = `w-full border rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 transition-colors duration-200
-    bg-[#060606] border-gray-700 text-white placeholder-gray-600
+    bg-[#060606] border-gray-700 text-white placeholder-gray-500
     [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-300 [html:not(.dark)_&]:text-slate-900 [html:not(.dark)_&]:placeholder-slate-400`;
 
   return (

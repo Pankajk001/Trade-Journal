@@ -14,6 +14,7 @@ const tradeSchema = new mongoose.Schema({
   direction: { type: String }, // Long, Short
   buySell: { type: String }, // Buy, Sell
   session: { type: String },
+  duration: { type: String }, // Duration of trade
   setupName: { type: String },
   strategyName: { type: String },
   entryPrice: { type: Number },
@@ -23,13 +24,16 @@ const tradeSchema = new mongoose.Schema({
   lotSize: { type: Number },
   riskRewardRatio: { type: Number },
   exitPrice: { type: Number },
+  fees: { type: Number, default: 0 },
+  swap: { type: Number, default: 0 },
+  netPnl: { type: Number },
   profitLoss: { type: Number },
   rMultiple: { type: Number },
   winLoss: { type: String }, // Win, Loss, Breakeven
   emotionsBeforeEntry: { type: String },
   confidenceLevel: { type: Number }, // 1 to 10
   tradeDescription: { type: String },
-  mistakesMade: { type: String },
+  mistakesMade: { type: String }, // Actually maybe an array of strings depending on frontend
   lessonsLearned: { type: String },
   tags: { type: [String] }, // Array of tags
   tradeStatus: {
@@ -49,9 +53,11 @@ const tradeSchema = new mongoose.Schema({
   // New Review & Reflection fields
   followedPlan: { type: Boolean, default: false },
   intendedPlan: { type: String },
+  entryConfluences: { type: [String] }, // Multi-select options
   tradeManagement: { type: String },
   entryEmotion: { type: String },
-  exitEmotion: { type: String }
+  exitEmotion: { type: String },
+  noteReflection: { type: String }
   
 }, {
   timestamps: true,
