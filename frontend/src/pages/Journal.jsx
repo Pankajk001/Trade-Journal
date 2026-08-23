@@ -34,12 +34,12 @@ const Journal = () => {
           placeholder="Search by Pair or Strategy..."
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
+          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
         />
         <select
           value={winLoss}
           onChange={(e) => setWinLoss(e.target.value)}
-          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
+          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
         >
           <option value="">All Results</option>
           <option value="Win">Win</option>
@@ -49,7 +49,7 @@ const Journal = () => {
         <select
           value={session}
           onChange={(e) => setSession(e.target.value)}
-          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-orange-500"
+          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
         >
           <option value="">All Sessions</option>
           <option value="London">London</option>
@@ -95,7 +95,7 @@ const Journal = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <Link to={`/dashboard/trade/${trade._id}`} className="text-orange-500 hover:text-orange-400 font-medium">
+                    <Link to={`/dashboard/trade/${trade._id}`} className="text-violet-500 hover:text-violet-400 font-medium">
                       View
                     </Link>
                   </td>
@@ -115,7 +115,7 @@ const Journal = () => {
               onClick={() => handlePageChange(x + 1)}
               className={`px-4 py-2 rounded-lg ${
                 x + 1 === page
-                  ? 'bg-orange-600 text-white'
+                  ? 'bg-violet-600 text-white'
                   : 'bg-[#1c1c1c] shadow-2xl shadow-black/60 border border-transparent text-gray-400 hover:bg-gray-700'
               }`}
             >

@@ -7,10 +7,14 @@ const {
   getTradeById,
   updateTrade,
   deleteTrade,
-  getPublicTrades
+  getPublicTrades,
+  parseTradeImage
 } = require('../controllers/tradeController');
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
+const multer = require('multer');
+
+const memUpload = multer({ storage: multer.memoryStorage() });
 
 // Define fields for multer
 const cpUpload = upload.fields([
@@ -21,6 +25,9 @@ const cpUpload = upload.fields([
 
 // Public route (must be before /:id so 'public' isn't treated as an ID)
 router.route('/public').get(getPublicTrades);
+
+router.route('/parse-image')
+  .post(protect, memUpload.single('tradeScreenshot'), parseTradeImage);
 
 router.route('/')
   .post(protect, cpUpload, createTrade)

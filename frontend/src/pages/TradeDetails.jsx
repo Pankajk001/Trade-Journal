@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import tradeService from '../services/tradeService';
 import { format } from 'date-fns';
 import ImageGallery from '../components/ImageGallery';
 import { FiTrash2 } from 'react-icons/fi';
@@ -15,7 +15,7 @@ const TradeDetails = () => {
   useEffect(() => {
     const fetchTrade = async () => {
       try {
-        const { data } = await axios.get(`/api/trades/${id}`);
+        const data = await tradeService.getTradeById(id);
         setTrade(data);
       } catch (err) {
         setError('Error fetching trade details');
@@ -29,7 +29,7 @@ const TradeDetails = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this trade?')) {
       try {
-        await axios.delete(`/api/trades/${id}`);
+        await tradeService.deleteTrade(id);
         navigate('/journal');
       } catch (err) {
         alert('Failed to delete trade');
@@ -199,7 +199,7 @@ const TradeDetails = () => {
                   href={trade.tradingViewLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-block bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+                  className="inline-block bg-violet-600 hover:bg-violet-700 text-white font-medium px-6 py-2 rounded-lg transition-colors"
                 >
                   View on TradingView
                 </a>

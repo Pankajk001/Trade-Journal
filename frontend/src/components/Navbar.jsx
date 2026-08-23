@@ -31,7 +31,7 @@ const Navbar = () => {
       <div className="flex items-center">
         <Link to="/" className="flex flex-col items-center justify-center hover:opacity-80 transition-opacity mt-1">
           <span className="text-white [html:not(.dark)_&]:text-slate-900 font-black text-lg leading-none tracking-widest uppercase">TRADE</span>
-          <div className="w-[110%] h-[3px] bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)] my-[3px] rounded-full"></div>
+          <div className="w-[110%] h-[3px] bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.8)] my-[3px] rounded-full"></div>
           <span className="text-white [html:not(.dark)_&]:text-slate-900 font-black text-lg leading-none tracking-widest uppercase">JOURNAL</span>
         </Link>
       </div>
@@ -54,12 +54,12 @@ const Navbar = () => {
               <img 
                 src={user.profilePic} 
                 alt={user.name} 
-                className="w-9 h-9 rounded-full object-cover shadow-lg shadow-orange-500/20 border border-orange-400/30"
+                className="w-9 h-9 rounded-full object-cover shadow-lg shadow-violet-500/20 border border-violet-400/30"
                 title={user.name}
               />
             ) : (
               <div 
-                className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-500/20 border border-orange-400/30"
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-violet-500/20 border border-violet-400/30"
                 title={user.name}
               >
                 {getInitials(user.name)}
@@ -83,7 +83,7 @@ const Navbar = () => {
             </Link>
             <Link
               to="/register"
-              className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Register
             </Link>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import statsService from '../services/statsService';
 import { Link } from 'react-router-dom';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -16,7 +16,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await axios.get('/api/trades/stats');
+        const data = await statsService.getStats();
         setStats(data);
       } catch (error) {
         console.error('Error fetching stats', error);
@@ -114,7 +114,7 @@ const Dashboard = () => {
       <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-hidden">
         <div className="p-6 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 flex justify-between items-center mb-4 px-2">
           <h2 className="text-xl font-bold text-white [html:not(.dark)_&]:text-slate-900">Recent Trades</h2>
-          <Link to="/dashboard/journal" className="text-orange-500 hover:text-orange-400 text-sm">View All</Link>
+          <Link to="/dashboard/journal" className="text-violet-500 hover:text-violet-400 text-sm">View All</Link>
         </div>
         <div className="overflow-x-auto">
           {stats.recentTrades.length === 0 ? (

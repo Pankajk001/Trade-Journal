@@ -57,7 +57,7 @@ const NumberedListInput = ({ label, name, value = '', onChange, placeholder = "E
                 value={item}
                 onChange={(e) => handleItemChange(index, e.target.value)}
                 placeholder={placeholder}
-                className="flex-1 bg-[#060606]/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-orange-500 focus:bg-[#060606] transition-colors placeholder-gray-600"
+                className="flex-1 bg-[#060606]/50 border border-gray-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 focus:bg-[#060606] transition-colors placeholder-gray-600"
               />
               <button
                 type="button"
@@ -76,7 +76,7 @@ const NumberedListInput = ({ label, name, value = '', onChange, placeholder = "E
       <button
         type="button"
         onClick={handleAddItem}
-        className="mt-4 mx-auto flex items-center justify-center w-6 h-6 text-orange-400 hover:text-orange-300 transition-colors bg-orange-500/10 hover:bg-orange-500/20 rounded-full"
+        className="mt-4 mx-auto flex items-center justify-center w-6 h-6 text-violet-400 hover:text-violet-300 transition-colors bg-violet-500/10 hover:bg-violet-500/20 rounded-full"
         title="Add Step"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">

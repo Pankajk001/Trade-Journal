@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { createContext, useState } from 'react';
+import tradeService from '../services/tradeService';
 
 export const TradeContext = createContext();
 
@@ -13,9 +13,7 @@ export const TradeProvider = ({ children }) => {
   const getTrades = async (keyword = '', winLoss = '', session = '', pageNumber = 1) => {
     try {
       setLoading(true);
-      const { data } = await axios.get(
-        `/api/trades?keyword=${keyword}&winLoss=${winLoss}&session=${session}&pageNumber=${pageNumber}`
-      );
+      const data = await tradeService.getTrades(keyword, winLoss, session, pageNumber);
       setTrades(data.trades);
       setPage(data.page);
       setPages(data.pages);
@@ -30,12 +28,7 @@ export const TradeProvider = ({ children }) => {
   const createTrade = async (tradeData) => {
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      };
-      await axios.post('/api/trades', tradeData, config);
+      await tradeService.createTrade(tradeData);
       // Reload trades after creating
       getTrades();
     } catch (error) {

@@ -37,6 +37,8 @@ const MockChart = ({ className = "w-full h-full min-h-[300px]" }) => {
         borderColor: theme === 'dark' ? '#2a2e39' : '#e2e8f0',
         timeVisible: true,
         secondsVisible: false,
+        fixLeftEdge: true,
+        fixRightEdge: true,
       },
       rightPriceScale: {
         borderColor: theme === 'dark' ? '#2a2e39' : '#e2e8f0',
@@ -89,15 +91,17 @@ const MockChart = ({ className = "w-full h-full min-h-[300px]" }) => {
     // Fit content
     chart.timeScale().fitContent();
 
-    // Handle resize
-    const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-    };
+    // Handle resize with ResizeObserver
+    const resizeObserver = new ResizeObserver(entries => {
+      if (entries.length === 0 || entries[0].target !== chartContainerRef.current) { return; }
+      const newRect = entries[0].contentRect;
+      chart.applyOptions({ width: newRect.width, height: newRect.height });
+    });
 
-    window.addEventListener('resize', handleResize);
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       chart.remove();
     };
   }, []);

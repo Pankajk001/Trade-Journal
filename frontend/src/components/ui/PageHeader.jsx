@@ -23,14 +23,14 @@ const PageHeader = ({ title, buttonText, buttonLink, buttonAction, backLink }) =
         buttonLink ? (
           <Link
             to={buttonLink}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg transition-colors"
           >
             {buttonText}
           </Link>
         ) : (
           <button
             onClick={buttonAction}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg transition-colors"
           >
             {buttonText}
           </button>

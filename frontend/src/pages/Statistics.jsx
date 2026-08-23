@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import statsService from '../services/statsService';
 import PageHeader from '../components/ui/PageHeader';
 import StatCard from '../components/ui/StatCard';
 import {
@@ -14,7 +14,7 @@ const Statistics = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await axios.get('/api/trades/stats'); 
+        const data = await statsService.getStats(); 
         
         let avgWin = 0;
         let avgLoss = 0;

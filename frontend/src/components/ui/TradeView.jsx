@@ -1,144 +1,219 @@
 import { format } from 'date-fns';
-import ImageGallery from '../ImageGallery';
+import { FiCheckCircle, FiXCircle, FiTrendingUp, FiTrendingDown, FiAlertCircle, FiImage } from 'react-icons/fi';
+
+const DataBlock = ({ label, value, valueClass = "text-white [html:not(.dark)_&]:text-slate-900" }) => (
+  <div className="flex flex-col gap-1.5">
+    <span className="text-[10px] font-bold text-gray-500 [html:not(.dark)_&]:text-slate-400 uppercase tracking-widest">{label}</span>
+    <span className={`text-sm font-semibold ${valueClass}`}>{value || '-'}</span>
+  </div>
+);
+
+const Badge = ({ children, color = "violet" }) => {
+  const colors = {
+    violet: "bg-violet-500/10 text-violet-500 border-violet-500/20",
+    green: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    red: "bg-rose-500/10 text-rose-500 border-rose-500/20",
+    gray: "bg-gray-500/10 text-gray-400 border-gray-500/20 [html:not(.dark)_&]:bg-slate-100 [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:border-slate-200",
+  };
+  return (
+    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border ${colors[color]} uppercase tracking-wider`}>
+      {children}
+    </span>
+  );
+};
+
+const ReadOnlyImage = ({ label, src }) => (
+  <div className="flex flex-col group">
+    <div className="bg-[#121212] [html:not(.dark)_&]:bg-slate-50 border border-gray-800 [html:not(.dark)_&]:border-slate-200 rounded-2xl p-1 aspect-video overflow-hidden relative shadow-inner mb-3 transition-all duration-300 group-hover:border-violet-500/30 group-hover:shadow-violet-500/10 cursor-pointer">
+      {src ? (
+        <img src={src} alt={label} className="w-full h-full object-cover rounded-xl transition-transform duration-700 group-hover:scale-105" />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center text-gray-600 [html:not(.dark)_&]:text-slate-400 rounded-xl">
+          <FiImage size={24} className="mb-2 opacity-30" />
+          <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest">No Image</span>
+        </div>
+      )}
+    </div>
+    <span className="text-xs font-bold text-gray-400 [html:not(.dark)_&]:text-slate-500 uppercase tracking-widest text-center">{label}</span>
+  </div>
+);
 
 const TradeView = ({ trade }) => {
   if (!trade) return null;
 
-  const images = [
-    { url: trade.screenshotBeforeEntry, title: 'Before Entry' },
-    { url: trade.screenshotDuringTrade, title: 'During Trade' },
-    { url: trade.screenshotAfterExit, title: 'After Exit' }
-  ].filter(img => img.url);
+  const htfImg = trade.screenshotHTF || trade.screenshotBeforeEntry;
+  const mtfImg = trade.screenshotMTF || trade.screenshotDuringTrade;
+  const ltfImg = trade.screenshotLTF || trade.screenshotAfterExit;
+
+  const netPnlNum = Number(String(trade.netPnl || '').replace(/[^0-9.-]/g, ''));
+  const isWin = netPnlNum > 0 || String(trade.netPnl || '').includes('+');
+  const isLoss = netPnlNum < 0 || String(trade.netPnl || '').includes('-');
 
   return (
-    <div className="w-full">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white [html:not(.dark)_&]:text-slate-900 mb-2">
-          {trade.pair} <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-xl font-normal">({trade.direction})</span>
-        </h1>
-        <p className="text-gray-400 [html:not(.dark)_&]:text-slate-600">
-          {trade.date ? format(new Date(trade.date), 'MMMM dd, yyyy') : 'Unknown Date'} 
-          {trade.time ? ` at ${trade.time}` : ''}
-          {trade.user?.name ? ` • by ${trade.user.name}` : ''}
-        </p>
+    <div className="w-full text-left font-sans pb-10">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b border-gray-800/50 [html:not(.dark)_&]:border-slate-200 pb-6 gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <h2 className="text-4xl font-black text-white [html:not(.dark)_&]:text-slate-900 tracking-tight">
+              Trade Report
+            </h2>
+            <div className="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1"></div>
+          </div>
+          <p className="text-sm font-semibold text-gray-500 [html:not(.dark)_&]:text-slate-500">
+            {trade.date ? format(new Date(trade.date), 'MMMM dd, yyyy') : 'Unknown Date'}
+          </p>
+        </div>
+        <div className="text-left sm:text-right bg-[#1c1c1c] [html:not(.dark)_&]:bg-slate-50 px-6 py-4 rounded-2xl border border-gray-800/50 [html:not(.dark)_&]:border-slate-200">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Net PNL</p>
+          <div className={`text-4xl font-black tracking-tighter leading-none ${isWin ? 'text-emerald-500' : isLoss ? 'text-rose-500' : 'text-gray-400 [html:not(.dark)_&]:text-slate-600'}`}>
+            {trade.netPnl || '$0.00'}
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Stats */}
-        <div className="space-y-6">
-          <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 shadow-lg [html:not(.dark)_&]:shadow-sm">
-            <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-4 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 pb-2">Result</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Outcome</span>
-                <span className={`font-medium ${trade.winLoss === 'Win' ? 'text-green-400 [html:not(.dark)_&]:text-green-600' : trade.winLoss === 'Loss' ? 'text-red-400 [html:not(.dark)_&]:text-red-600' : 'text-gray-400 [html:not(.dark)_&]:text-slate-500'}`}>
-                  {trade.winLoss}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Profit/Loss</span>
-                <span className={`font-medium ${trade.profitLoss >= 0 ? 'text-green-400 [html:not(.dark)_&]:text-green-600' : 'text-red-400 [html:not(.dark)_&]:text-red-600'}`}>
-                  ${trade.profitLoss || 0}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">R Multiple</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.rMultiple || 0}R</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 shadow-lg [html:not(.dark)_&]:shadow-sm">
-            <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-4 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 pb-2">Setup Details</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Strategy</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.strategyName || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Setup</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.setupName || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Session</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.session || 'N/A'}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 shadow-lg [html:not(.dark)_&]:shadow-sm">
-            <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-4 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 pb-2">Pricing</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Entry</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.entryPrice || '-'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Stop Loss</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.stopLoss || '-'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400 [html:not(.dark)_&]:text-slate-600">Take Profit</span>
-                <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.takeProfit || '-'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Review & Gallery */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 shadow-lg [html:not(.dark)_&]:shadow-sm">
-            <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-4 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 pb-2">Journal Review</h2>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+        
+        {/* LEFT COLUMN: Overview (Col Span 4) */}
+        <div className="xl:col-span-4 space-y-6">
+          <div className="bg-[#1c1c1c] rounded-3xl border border-gray-800/60 p-7 shadow-xl [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-slate-200/50 hover:border-gray-700 [html:not(.dark)_&]:hover:border-slate-300 transition-colors">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800/60 [html:not(.dark)_&]:border-slate-100 pb-3 mb-6 flex items-center gap-2">
+              Overview
+            </h3>
             
-            <div className="mb-4">
-              <h3 className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-sm mb-1">Description</h3>
-              <p className="text-white [html:not(.dark)_&]:text-slate-900 bg-[#060606] [html:not(.dark)_&]:bg-slate-50 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-slate-200 p-4 rounded-lg">{trade.tradeDescription || 'No description provided.'}</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <h3 className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-sm mb-1">Emotions Before Entry</h3>
-                <p className="text-white [html:not(.dark)_&]:text-slate-900 bg-[#060606] [html:not(.dark)_&]:bg-slate-50 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-slate-200 p-3 rounded-lg">{trade.emotionsBeforeEntry || '-'}</p>
-              </div>
-              <div>
-                <h3 className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-sm mb-1">Confidence (1-10)</h3>
-                <p className="text-white [html:not(.dark)_&]:text-slate-900 bg-[#060606] [html:not(.dark)_&]:bg-slate-50 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-slate-200 p-3 rounded-lg">{trade.confidenceLevel || '-'}</p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-sm mb-1">Mistakes Made</h3>
-              <p className="text-red-300 [html:not(.dark)_&]:text-red-700 bg-red-900/20 [html:not(.dark)_&]:bg-red-50 border border-red-900/50 [html:not(.dark)_&]:border-red-200 p-4 rounded-lg">{trade.mistakesMade || 'None recorded.'}</p>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-sm mb-1">Lessons Learned</h3>
-              <p className="text-green-300 [html:not(.dark)_&]:text-green-700 bg-green-900/20 [html:not(.dark)_&]:bg-green-50 border border-green-900/50 [html:not(.dark)_&]:border-green-200 p-4 rounded-lg">{trade.lessonsLearned || 'No lessons recorded.'}</p>
-            </div>
-            
-            {trade.tags && trade.tags.length > 0 && (
-              <div>
-                <h3 className="text-gray-400 [html:not(.dark)_&]:text-slate-600 text-sm mb-1">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {trade.tags.map((tag, i) => (
-                    <span key={i} className="bg-gray-700 [html:not(.dark)_&]:bg-slate-100 text-gray-300 [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-slate-200 px-3 py-1 rounded-full text-sm">#{tag}</span>
-                  ))}
+            <div className="grid grid-cols-2 gap-6 mb-7">
+              <DataBlock label="Instrument" value={trade.pair} />
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Direction</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  {trade.direction === 'Long' ? <Badge color="green">Long</Badge> : trade.direction === 'Short' ? <Badge color="red">Short</Badge> : <Badge color="gray">-</Badge>}
                 </div>
               </div>
-            )}
+            </div>
+            
+            <div className="grid grid-cols-2 gap-6 mb-7">
+              <DataBlock label="Lot Size" value={trade.lotSize} />
+              <DataBlock label="Session" value={trade.session} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-6">
+              <DataBlock label="Risk" value={trade.riskPercentage ? `${trade.riskPercentage}%` : '-'} />
+              <DataBlock label="Return (R)" value={trade.rMultiple ? `${trade.rMultiple}R` : '-'} valueClass={Number(trade.rMultiple) > 0 ? "text-emerald-500" : Number(trade.rMultiple) < 0 ? "text-rose-500" : "text-white [html:not(.dark)_&]:text-slate-900"} />
+            </div>
           </div>
 
-          <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent [html:not(.dark)_&]:border-slate-200 shadow-lg [html:not(.dark)_&]:shadow-sm">
-            <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-4 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 pb-2">Screenshots</h2>
-            {images.length > 0 ? (
-              <ImageGallery images={images} />
-            ) : (
-              <p className="text-gray-400 [html:not(.dark)_&]:text-slate-600">No screenshots attached to this trade.</p>
-            )}
+          <div className="bg-[#1c1c1c] rounded-3xl border border-gray-800/60 p-7 shadow-xl [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-slate-200/50 hover:border-gray-700 [html:not(.dark)_&]:hover:border-slate-300 transition-colors">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800/60 [html:not(.dark)_&]:border-slate-100 pb-3 mb-6">
+              Execution
+            </h3>
             
-
+            <div className="grid grid-cols-2 gap-6 mb-7">
+              <DataBlock label="Entry Price" value={trade.entryPrice} />
+              <DataBlock label="Exit Price" value={trade.exitPrice} />
+            </div>
+            <div className="grid grid-cols-2 gap-6 mb-7">
+              <DataBlock label="Stop Loss" value={trade.stopLoss} />
+              <DataBlock label="Take Profit" value={trade.takeProfit} />
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <DataBlock label="Duration" value={trade.duration} />
+              <DataBlock label="Fees / Swap" value={`${trade.fees || '0'} / ${trade.swap || '0'}`} />
+            </div>
           </div>
         </div>
+
+        {/* RIGHT COLUMN: Context & Reflection (Col Span 8) */}
+        <div className="xl:col-span-8 space-y-6">
+          
+          {/* Charts Card */}
+          <div className="bg-[#1c1c1c] rounded-3xl border border-gray-800/60 p-7 shadow-xl [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-slate-200/50 hover:border-violet-500/30 transition-colors">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800/60 [html:not(.dark)_&]:border-slate-100 pb-3 mb-6">
+              Technical Context
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <ReadOnlyImage label="MTF Overview" src={mtfImg} />
+              <ReadOnlyImage label="HTF Context" src={htfImg} />
+              <ReadOnlyImage label="LTF Entry" src={ltfImg} />
+            </div>
+          </div>
+
+          {/* Reflection Card */}
+          <div className="bg-[#1c1c1c] rounded-3xl border border-gray-800/60 p-7 shadow-xl [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-slate-200/50 hover:border-violet-500/30 transition-colors">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800/60 [html:not(.dark)_&]:border-slate-100 pb-3 mb-8">
+              Analysis & Reflection
+            </h3>
+            
+            <div className="space-y-8">
+              {/* Plan & Strategy */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <div className="flex flex-col gap-1.5 mb-6">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Plan Adherence</span>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      {trade.followedPlan ? (
+                        <div className="flex items-center gap-2 text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                          <FiCheckCircle size={14} />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Followed Plan</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-rose-500 bg-rose-500/10 px-3 py-1.5 rounded-lg border border-rose-500/20">
+                          <FiXCircle size={14} />
+                          <span className="text-[10px] font-bold uppercase tracking-wider">Deviated</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <DataBlock label="Intended Strategy" value={trade.strategyName || trade.intendedPlan || 'No strategy assigned'} valueClass="text-violet-400 font-bold [html:not(.dark)_&]:text-violet-600" />
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-4">Confluences Met</span>
+                  {Array.isArray(trade.entryConfluences) && trade.entryConfluences.length > 0 ? (
+                    <ul className="space-y-3">
+                      {trade.entryConfluences.map((c, i) => (
+                        <li key={i} className="flex items-start gap-3 text-sm text-gray-300 [html:not(.dark)_&]:text-slate-700 font-medium">
+                          <div className="w-1.5 h-1.5 rounded-full bg-violet-500 mt-1.5 flex-shrink-0"></div>
+                          <span className="leading-tight">{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-sm text-gray-500 italic bg-[#121212] [html:not(.dark)_&]:bg-slate-50 px-3 py-2 rounded-lg border border-gray-800/40 [html:not(.dark)_&]:border-slate-200">No confluences recorded.</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="border-t border-gray-800/40 [html:not(.dark)_&]:border-slate-100"></div>
+
+              {/* Psychology & Management */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <DataBlock label="Trade Management" value={trade.tradeManagement} />
+                  <DataBlock label="Mistakes Made" value={trade.mistakesMade} valueClass={trade.mistakesMade ? "text-rose-400 [html:not(.dark)_&]:text-rose-600" : "text-gray-400"} />
+                </div>
+                <div className="space-y-6">
+                  <DataBlock label="Entry Emotion" value={trade.entryEmotion} />
+                  <DataBlock label="Exit Emotion" value={trade.exitEmotion} />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-800/40 [html:not(.dark)_&]:border-slate-100"></div>
+
+              {/* Notes */}
+              <div>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-3">Journal Notes</span>
+                <div className="bg-[#121212] [html:not(.dark)_&]:bg-slate-50 border border-gray-800/60 [html:not(.dark)_&]:border-slate-200 rounded-2xl p-5 shadow-inner">
+                  <p className="text-sm text-gray-300 [html:not(.dark)_&]:text-slate-700 leading-relaxed font-medium whitespace-pre-wrap">
+                    {trade.noteReflection || trade.lessonsLearned || trade.tradeDescription || 'No detailed notes provided for this trade.'}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

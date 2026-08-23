@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import noteService from '../services/noteService';
 import PageHeader from '../components/ui/PageHeader';
 import FormInput from '../components/ui/FormInput';
 import FormSelect from '../components/ui/FormSelect';
@@ -22,8 +22,7 @@ const Notes = () => {
 
   const fetchNotes = async () => {
     try {
-      const url = activeCategory ? `/api/notes?category=${activeCategory}` : '/api/notes';
-      const { data } = await axios.get(url);
+      const data = await noteService.getNotes(activeCategory);
       setNotes(data);
     } catch (error) {
       console.error('Error fetching notes', error);
@@ -45,7 +44,7 @@ const Notes = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/notes', formData);
+      await noteService.createNote(formData);
       setIsModalOpen(false);
       setFormData({ title: '', category: 'General', content: '', tags: '' });
       fetchNotes(); // Refresh list
@@ -57,7 +56,7 @@ const Notes = () => {
   const deleteNote = async (id) => {
     if (window.confirm('Are you sure you want to delete this note?')) {
       try {
-        await axios.delete(`/api/notes/${id}`);
+        await noteService.deleteNote(id);
         fetchNotes();
       } catch (error) {
         console.error('Error deleting note', error);
@@ -78,7 +77,7 @@ const Notes = () => {
         <button
           onClick={() => setActiveCategory('')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-            activeCategory === '' ? 'bg-orange-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white shadow-2xl shadow-black/60 border border-transparent'
+            activeCategory === '' ? 'bg-violet-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white shadow-2xl shadow-black/60 border border-transparent'
           }`}
         >
           All Notes
@@ -88,7 +87,7 @@ const Notes = () => {
             key={cat}
             onClick={() => setActiveCategory(cat)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              activeCategory === cat ? 'bg-orange-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white shadow-2xl shadow-black/60 border border-transparent'
+              activeCategory === cat ? 'bg-violet-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white shadow-2xl shadow-black/60 border border-transparent'
             }`}
           >
             {cat}
@@ -111,7 +110,7 @@ const Notes = () => {
               {note.attachmentUrl ? (
                 <div className="h-48 w-full relative overflow-hidden bg-[#060606] [html:not(.dark)_&]:bg-slate-50 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200">
                   <img src={note.attachmentUrl} alt="Attachment" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                  <span className="absolute top-3 left-3 bg-[#060606] [html:not(.dark)_&]:bg-orange-50 text-orange-400 [html:not(.dark)_&]:text-orange-600 text-xs px-2 py-1 rounded-md border border-gray-700 [html:not(.dark)_&]:border-orange-200">
+                  <span className="absolute top-3 left-3 bg-[#060606] [html:not(.dark)_&]:bg-violet-50 text-violet-400 [html:not(.dark)_&]:text-violet-600 text-xs px-2 py-1 rounded-md border border-gray-700 [html:not(.dark)_&]:border-violet-200">
                     {note.category}
                   </span>
                   <button 
@@ -123,7 +122,7 @@ const Notes = () => {
                 </div>
               ) : (
                 <div className="pt-4 px-6 pb-0 flex justify-between items-start">
-                  <span className="bg-[#060606] [html:not(.dark)_&]:bg-orange-50 text-orange-400 [html:not(.dark)_&]:text-orange-600 text-xs px-2 py-1 rounded-md border border-gray-700 [html:not(.dark)_&]:border-orange-200">
+                  <span className="bg-[#060606] [html:not(.dark)_&]:bg-violet-50 text-violet-400 [html:not(.dark)_&]:text-violet-600 text-xs px-2 py-1 rounded-md border border-gray-700 [html:not(.dark)_&]:border-violet-200">
                     {note.category}
                   </span>
                   <button 
@@ -234,7 +233,7 @@ const Notes = () => {
                 <button 
                   type="submit" 
                   form="note-form"
-                  className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-105 active:scale-95"
+                  className="bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-violet-500/20 transition-all hover:scale-105 active:scale-95"
                 >
                   Save Note
                 </button>

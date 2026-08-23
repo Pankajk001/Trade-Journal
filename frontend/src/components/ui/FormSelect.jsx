@@ -30,7 +30,7 @@ const FormSelect = ({ label, name, value, onChange, options, required = false })
       <div 
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full border rounded-lg px-4 py-2 cursor-pointer flex items-center justify-center relative transition-all duration-300
-          ${isOpen ? 'border-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]' : 'border-gray-700 [html:not(.dark)_&]:border-slate-300 hover:border-gray-500'}
+          ${isOpen ? 'border-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.2)]' : 'border-gray-700 [html:not(.dark)_&]:border-slate-300 hover:border-gray-500'}
           bg-[#060606] text-white [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-900`}
       >
         <span className={`text-left w-full font-medium ${!value ? 'text-gray-500 [html:not(.dark)_&]:text-slate-400' : ''}`}>
@@ -51,7 +51,7 @@ const FormSelect = ({ label, name, value, onChange, options, required = false })
               key={i}
               onClick={() => handleSelect(opt.value)}
               className={`px-4 py-2 rounded-lg cursor-pointer text-left transition-colors font-medium
-                ${value === opt.value ? 'bg-orange-500/10 text-orange-500' : 'text-gray-300 hover:bg-orange-500/10 hover:text-orange-500 [html:not(.dark)_&]:text-slate-700 [html:not(.dark)_&]:hover:bg-orange-50'}`}
+                ${value === opt.value ? 'bg-violet-500/10 text-violet-500' : 'text-gray-300 hover:bg-violet-500/10 hover:text-violet-500 [html:not(.dark)_&]:text-slate-700 [html:not(.dark)_&]:hover:bg-violet-50'}`}
             >
               {opt.label}
             </div>

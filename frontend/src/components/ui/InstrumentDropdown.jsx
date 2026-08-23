@@ -115,7 +115,7 @@ const InstrumentDropdown = ({ value, onChange }) => {
                   key={option}
                   onClick={() => handleSelect(option)}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition-colors
-                    ${value === option ? 'bg-orange-500/10 text-orange-500' : 'text-gray-300 hover:bg-orange-500/10 hover:text-orange-500 [html:not(.dark)_&]:text-slate-700 [html:not(.dark)_&]:hover:bg-orange-50'}`}
+                    ${value === option ? 'bg-violet-500/10 text-violet-500' : 'text-gray-300 hover:bg-violet-500/10 hover:text-violet-500 [html:not(.dark)_&]:text-slate-700 [html:not(.dark)_&]:hover:bg-violet-50'}`}
                 >
                   <InstrumentIcon pair={option} />
                   <span className="text-xs font-medium">{option}</span>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import mistakeService from '../services/mistakeService';
 import PageHeader from '../components/ui/PageHeader';
 import FormInput from '../components/ui/FormInput';
 
@@ -19,7 +19,7 @@ const Mistakes = () => {
 
   const fetchMistakes = async () => {
     try {
-      const { data } = await axios.get('/api/mistakes');
+      const data = await mistakeService.getMistakes();
       setMistakes(data);
     } catch (error) {
       console.error('Error fetching mistakes', error);
@@ -39,7 +39,7 @@ const Mistakes = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/mistakes', formData);
+      await mistakeService.createMistake(formData);
       setIsModalOpen(false);
       setFormData({ title: '', description: '', impact: '', solution: '', howToAvoid: '' });
       fetchMistakes(); // Refresh list
@@ -51,7 +51,7 @@ const Mistakes = () => {
   const deleteMistake = async (id) => {
     if (window.confirm('Are you sure you want to delete this mistake from your library?')) {
       try {
-        await axios.delete(`/api/mistakes/${id}`);
+        await mistakeService.deleteMistake(id);
         fetchMistakes();
       } catch (error) {
         console.error('Error deleting mistake', error);
@@ -200,7 +200,7 @@ const Mistakes = () => {
                 <button 
                   type="submit" 
                   form="mistake-form"
-                  className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-105 active:scale-95"
+                  className="bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-violet-500/20 transition-all hover:scale-105 active:scale-95"
                 >
                   Save Mistake
                 </button>
@@ -264,9 +264,9 @@ const Mistakes = () => {
                 </div>
 
                 <div>
-                  <h4 className="text-orange-400 text-xs font-semibold uppercase tracking-wider mb-2">How to Avoid</h4>
-                  <div className="bg-orange-900/20 p-4 rounded-xl border border-orange-500/20">
-                    <p className="text-orange-200 text-sm whitespace-pre-wrap leading-relaxed">{selectedMistake.howToAvoid}</p>
+                  <h4 className="text-violet-400 text-xs font-semibold uppercase tracking-wider mb-2">How to Avoid</h4>
+                  <div className="bg-violet-900/20 p-4 rounded-xl border border-violet-500/20">
+                    <p className="text-violet-200 text-sm whitespace-pre-wrap leading-relaxed">{selectedMistake.howToAvoid}</p>
                   </div>
                 </div>
               </div>

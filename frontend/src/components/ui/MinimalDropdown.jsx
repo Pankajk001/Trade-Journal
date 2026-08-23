@@ -45,7 +45,7 @@ const MinimalDropdown = ({ name, value, onChange, options, variant = 'underline'
               key={i}
               onClick={() => handleSelect(opt.value)}
               className={`px-3 py-1.5 rounded-lg cursor-pointer text-left transition-colors font-medium text-sm whitespace-nowrap
-                ${value === opt.value ? 'bg-orange-500/10 text-orange-500' : 'text-gray-300 hover:bg-orange-500/10 hover:text-orange-500 [html:not(.dark)_&]:text-slate-700 [html:not(.dark)_&]:hover:bg-orange-50'}`}
+                ${value === opt.value ? 'bg-violet-500/10 text-violet-500' : 'text-gray-300 hover:bg-violet-500/10 hover:text-violet-500 [html:not(.dark)_&]:text-slate-700 [html:not(.dark)_&]:hover:bg-violet-50'}`}
             >
               {opt.label}
             </div>

@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import authService from '../services/authService';
 import PageHeader from '../components/ui/PageHeader';
 import FormInput from '../components/ui/FormInput';
 import ImageUploadBox from '../components/ui/ImageUploadBox';
@@ -59,7 +59,7 @@ const Settings = () => {
     }
 
     try {
-      const { data } = await axios.put('/api/auth/me', {
+      const data = await authService.updateProfile({
         name: formData.name,
         email: formData.email,
         password: formData.password || undefined,
@@ -149,7 +149,7 @@ const Settings = () => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-bold py-2.5 px-8 rounded-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+              className="bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white font-bold py-2.5 px-8 rounded-lg shadow-lg shadow-violet-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
             >
               {loading ? 'Saving Changes...' : 'Save Changes'}
             </button>

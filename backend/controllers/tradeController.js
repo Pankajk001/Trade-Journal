@@ -1,4 +1,5 @@
 const Trade = require('../models/Trade');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // @desc    Create a new trade
 // @route   POST /api/trades
@@ -216,6 +217,56 @@ const getPublicTrades = async (req, res, next) => {
   }
 };
 
+// @desc    Parse trade image using Gemini AI
+// @route   POST /api/trades/parse-image
+// @access  Private
+const parseTradeImage = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      res.status(400);
+      throw new Error('No image provided');
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+
+    const prompt = `
+      Analyze this trade screenshot. Extract the following information and return strictly as JSON, with no other text or markdown formatting.
+      - netPnl (string, e.g. "-$81.35" or "+$50.00")
+      - pair (string, e.g. "XAUUSD")
+      - direction (string, "Long" or "Short")
+      - lotSize (string, e.g. "0.05")
+      - entryPrice (string, e.g. "4592.34")
+      - exitPrice (string, e.g. "4608.56")
+      
+      If you cannot find a value, return an empty string for that field.
+    `;
+
+    const imageParts = [
+      {
+        inlineData: {
+          data: req.file.buffer.toString("base64"),
+          mimeType: req.file.mimetype
+        }
+      }
+    ];
+
+    const result = await model.generateContent([prompt, ...imageParts]);
+    const responseText = result.response.text();
+    
+    // Clean up potential markdown formatting from Gemini response (like ```json ... ```)
+    const cleanedText = responseText.replace(/```json\n?|\n?```/g, '').trim();
+    
+    const parsedData = JSON.parse(cleanedText);
+    
+    res.json(parsedData);
+  } catch (error) {
+    console.error('Error parsing image:', error);
+    res.status(500);
+    next(error);
+  }
+};
+
 module.exports = {
   createTrade,
   getTrades,
@@ -224,4 +275,5 @@ module.exports = {
   updateTrade,
   deleteTrade,
   getPublicTrades,
+  parseTradeImage,
 };

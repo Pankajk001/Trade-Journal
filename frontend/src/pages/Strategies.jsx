@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
+import strategyService from '../services/strategyService';
 import PageHeader from '../components/ui/PageHeader';
 import FormInput from '../components/ui/FormInput';
 import FormSelect from '../components/ui/FormSelect';
@@ -21,7 +21,7 @@ const Strategies = () => {
 
   const fetchStrategies = async () => {
     try {
-      const { data } = await axios.get('/api/strategies');
+      const data = await strategyService.getStrategies();
       setStrategies(data);
     } catch (error) {
       console.error('Error fetching strategies', error);
@@ -41,7 +41,7 @@ const Strategies = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/strategies', formData);
+      await strategyService.createStrategy(formData);
       setIsModalOpen(false);
       setFormData({ name: '', description: '', chartingProcess: '', entryCriteria: '', status: 'Testing' });
       fetchStrategies(); // Refresh list
@@ -53,7 +53,7 @@ const Strategies = () => {
   const deleteStrategy = async (id) => {
     if (window.confirm('Are you sure you want to delete this strategy?')) {
       try {
-        await axios.delete(`/api/strategies/${id}`);
+        await strategyService.deleteStrategy(id);
         fetchStrategies();
       } catch (error) {
         console.error('Error deleting strategy', error);
@@ -119,7 +119,7 @@ const Strategies = () => {
                 </div>
                 <div className="text-center">
                   <p className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-xs uppercase mb-1">Avg RR</p>
-                  <p className="text-orange-400 [html:not(.dark)_&]:text-orange-600 font-bold">{strategy.stats.averageRR}</p>
+                  <p className="text-violet-400 [html:not(.dark)_&]:text-violet-600 font-bold">{strategy.stats.averageRR}</p>
                 </div>
               </div>
             </div>
@@ -226,7 +226,7 @@ const Strategies = () => {
                 <button
                   type="submit"
                   form="strategy-form"
-                  className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-orange-500/20 transition-all hover:scale-105 active:scale-95"
+                  className="bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-violet-500/20 transition-all hover:scale-105 active:scale-95"
                 >
                   Save Strategy
                 </button>
@@ -321,7 +321,7 @@ const Strategies = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-gray-500 text-[10px] uppercase tracking-wider mb-1">Avg RR</p>
-                    <p className="text-orange-400 font-bold">{selectedStrategy.stats?.averageRR || 0}</p>
+                    <p className="text-violet-400 font-bold">{selectedStrategy.stats?.averageRR || 0}</p>
                   </div>
                 </div>
                 <button

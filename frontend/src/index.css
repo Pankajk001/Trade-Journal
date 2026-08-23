@@ -10,11 +10,8 @@
   --color-gray-300: #d4d4d4;
   --color-gray-200: #e5e5e5;
   --color-gray-100: #f5f5f5;
-  --color-orange-400: #fb923c;
-  --color-orange-500: #f97316;
-  --color-orange-600: #ea580c;
-  --color-orange-700: #c2410c;
   --color-white: #ffffff;
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
@@ -57,3 +54,168 @@ html.dark ::-webkit-scrollbar-thumb {
   background: #404040;
   border-radius: 3px;
 }
+
+/* ===================== LANDING PAGE ANIMATIONS ===================== */
+
+/* Shimmer effect for CTA buttons */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.btn-shimmer {
+  background-size: 200% auto;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 40%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.12) 60%,
+    transparent 100%
+  );
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Pulse glow for the navbar heartbeat line */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(139, 92, 246, 0.6), 0 0 12px rgba(139, 92, 246, 0.3);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(139, 92, 246, 1), 0 0 28px rgba(139, 92, 246, 0.5);
+    opacity: 0.85;
+  }
+}
+
+.heartbeat-line {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* Market ticker infinite scroll */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: flex;
+  animation: ticker-scroll 30s linear infinite;
+  width: max-content;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(4px) rotate(-1deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delay {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-delay-2 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+/* Gradient text animation */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animated-gradient-text {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+/* Dot grid background */
+.dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+html:not(.dark) .dot-grid-bg {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+}
+
+/* Crosshair grid for hero section */
+.crosshair-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+html:not(.dark) .crosshair-bg {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+}
+
+/* Pulse animation for CTA */
+@keyframes cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(139, 92, 246, 0); }
+}
+
+.cta-pulse {
+  animation: cta-pulse 2.5s ease-in-out infinite;
+}
+
+/* Smooth gradient border for testimonial cards */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), transparent 40%, transparent 60%, rgba(139, 92, 246, 0.15));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+html:not(.dark) .gradient-border::before {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), transparent 40%, transparent 60%, rgba(139, 92, 246, 0.08));
+}
+
+/* Reflection effect for dashboard preview */
+.reflection {
+  position: relative;
+}
+
+.reflection::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: 5%;
+  right: 5%;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(139, 92, 246, 0.06), transparent);
+  border-radius: 50%;
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+html:not(.dark) .reflection::after {
+  background: linear-gradient(to bottom, rgba(139, 92, 246, 0.03), transparent);
+}
+

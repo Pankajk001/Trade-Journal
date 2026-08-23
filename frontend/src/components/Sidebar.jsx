@@ -29,7 +29,7 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'} py-3 rounded-xl transition-all duration-200 font-medium text-sm ${
                 isActive
-                  ? 'bg-orange-500/10 text-orange-500 border border-orange-500/30 [html:not(.dark)_&]:bg-orange-50 [html:not(.dark)_&]:border-orange-200'
+                  ? 'bg-violet-500/10 text-violet-500 border border-violet-500/30 [html:not(.dark)_&]:bg-violet-50 [html:not(.dark)_&]:border-violet-200'
                   : 'text-gray-400 hover:bg-gray-700/50 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:hover:text-slate-800'
               }`
             }
