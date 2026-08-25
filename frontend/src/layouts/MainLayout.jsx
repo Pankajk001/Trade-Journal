@@ -10,8 +10,7 @@ const MainLayout = () => {
   return (
     <div className="h-screen flex flex-col transition-colors duration-300 overflow-hidden
                     bg-[#060606]
-                    [html:not(.dark)_&]:bg-slate-100">
-      <Navbar />
+                    [html:not(.dark)_&]:bg-[#f6f4fa]">
       <div className="flex flex-1 overflow-hidden">
         {/* Left Navigation */}
         <Sidebar />
@@ -19,7 +18,7 @@ const MainLayout = () => {
         {/* Center Main Content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto transition-colors duration-300
                          bg-[#060606]
-                         [html:not(.dark)_&]:bg-slate-100">
+                         [html:not(.dark)_&]:bg-[#f6f4fa]">
           <Outlet />
         </main>
         

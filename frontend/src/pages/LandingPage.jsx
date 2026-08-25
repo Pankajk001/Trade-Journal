@@ -72,7 +72,7 @@ const LandingPage = () => {
       <main className="flex-1">
         
         {/* ================= HERO SECTION ================= */}
-        <section className="relative min-h-[95vh] flex flex-col items-center justify-center pt-28 pb-16 overflow-hidden dot-grid-bg">
+        <section className="relative min-h-[95vh] flex flex-col items-center justify-center pt-28 pb-16 overflow-hidden">
           {/* Animated Background Gradients */}
           <motion.div 
             style={{ y: yPosAnim, opacity: opacityAnim }}
@@ -208,7 +208,7 @@ const LandingPage = () => {
         {/* ================= TRUST STRIP ================= */}
         <section className="py-12 bg-[#060606] [html:not(.dark)_&]:bg-slate-50 border-t border-b border-gray-800/30 [html:not(.dark)_&]:border-slate-200/50 relative z-10">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p className="text-gray-500 [html:not(.dark)_&]:text-slate-400 text-sm font-medium uppercase tracking-widest mb-8">Trusted by traders using</p>
+            <p className="text-violet-500 font-bold uppercase tracking-widest mb-8">Trusted by traders using</p>
             <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-4">
               {['TradingView', 'MetaTrader 4', 'NinjaTrader', 'Thinkorswim', 'Interactive Brokers', 'Sierra Chart'].map((name) => (
                 <span key={name} className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-base sm:text-lg font-bold tracking-wide opacity-70 hover:opacity-100 transition-opacity duration-300 cursor-default select-none">

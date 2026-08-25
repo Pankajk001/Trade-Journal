@@ -133,9 +133,9 @@ const getTradeStats = async (req, res, next) => {
 // @access  Private
 const getTradeById = async (req, res, next) => {
   try {
-    const trade = await Trade.findById(req.params.id);
+    const trade = await Trade.findById(req.params.id).populate('user', 'name');
 
-    if (trade && trade.user.toString() === req.user._id.toString()) {
+    if (trade && trade.user._id.toString() === req.user._id.toString()) {
       res.json(trade);
     } else {
       res.status(404);

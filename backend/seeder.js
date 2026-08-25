@@ -59,7 +59,7 @@ const generateDummyTrades = (userId) => {
       entryEmotion: emotions[Math.floor(Math.random() * emotions.length)],
       exitEmotion: emotions[Math.floor(Math.random() * emotions.length)],
       tradeManagement: 'Moved SL to BE at 1R',
-      noteReflection: 'This is a dummy trade reflecting the new fields. Waited patiently for setup.',
+      noteReflection: 'This is a dummy trade reflecting the new fields. Waited patiently for setup.\n\nMarket conditions were optimal during the entry window, with clear price action confirming the anticipated directional bias.\n\nRisk management protocols were strictly followed throughout the lifespan of the trade, ensuring capital preservation while maximizing potential upside.\n\nThe position was monitored consistently, and adjustments to the stop loss and take profit targets were made in accordance with unfolding market structure.\n\nUltimately, this execution represents a textbook application of the core strategy, demonstrating the value of patience and precise execution.',
       mistakesMade: winLoss === 'Loss' ? 'Added to Position too early' : 'None',
       lessonsLearned: 'Always wait for the candle to close',
       tags: ['dummy', 'test'],

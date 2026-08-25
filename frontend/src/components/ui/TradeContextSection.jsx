@@ -12,7 +12,7 @@ const TradeContextSection = ({
   netPnlRef
 }) => {
   return (
-    <div className="xl:col-span-4 bg-[#1c1c1c] rounded-2xl border border-gray-800/80 p-6 shadow-lg [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
+    <div className="xl:col-span-4 bg-[#1c1c1c] rounded-2xl border border-gray-800/80 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-white [html:not(.dark)_&]:text-slate-900">Trade details</h2>
         <div className="relative">
@@ -42,13 +42,31 @@ const TradeContextSection = ({
       </div>
       
       <div className="mb-6">
-        <div className={`flex items-center text-3xl font-bold bg-black border border-gray-800 rounded-xl px-4 py-3 focus-within:border-purple-500 transition-colors ${String(formData.netPnl || '').startsWith('-') ? 'text-red-500' : 'text-green-500'} [html:not(.dark)_&]:bg-slate-50 [html:not(.dark)_&]:border-slate-200`}>
+        <div className={`flex items-center text-3xl font-bold bg-black border border-gray-800 rounded-xl px-4 py-3 focus-within:border-purple-500 transition-colors ${String(formData.netPnl || '').startsWith('-') ? 'text-red-500' : 'text-[#00d26a]'} [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200`}>
           <input 
             ref={netPnlRef}
             type="text" 
             name="netPnl" 
             value={formData.netPnl} 
-            onChange={(e) => setFormData(prev => ({ ...prev, netPnl: e.target.value }))}
+            onChange={(e) => {
+              let raw = e.target.value;
+              let isNegative = raw.includes('-');
+              
+              let val = raw.replace(/[^0-9.]/g, '');
+              
+              const parts = val.split('.');
+              if (parts.length > 2) {
+                val = parts[0] + '.' + parts.slice(1).join('');
+              }
+
+              if (!val) {
+                setFormData(prev => ({ ...prev, netPnl: isNegative ? '-' : '' }));
+                return;
+              }
+              
+              let formatted = isNegative ? `-$${val}` : `+$${val}`;
+              setFormData(prev => ({ ...prev, netPnl: formatted }));
+            }}
             onBlur={(e) => {
               let val = e.target.value.replace(/[^0-9.-]/g, '');
               if (!val || val === '-' || val === '.') {
@@ -71,7 +89,16 @@ const TradeContextSection = ({
                 setFormData(prev => ({ ...prev, netPnl: formatted }));
               }
             }}
-            className={`bg-transparent outline-none w-full ${String(formData.netPnl || '').startsWith('-') ? 'placeholder-red-700/50' : 'placeholder-green-700/50'}`} 
+            onWheel={(e) => {
+              if (document.activeElement === e.target) {
+                let val = e.target.value.replace(/[^0-9.-]/g, '');
+                let current = Number(val) || 0;
+                let next = e.deltaY < 0 ? current + 1 : current - 1;
+                let formatted = next < 0 ? `-$${Math.abs(next).toFixed(2)}` : `+$${next.toFixed(2)}`;
+                setFormData(prev => ({ ...prev, netPnl: formatted }));
+              }
+            }}
+            className={`bg-transparent outline-none w-full ${String(formData.netPnl || '').startsWith('-') ? 'placeholder-red-500/50' : 'placeholder-[#00d26a]/50'}`} 
             placeholder="+$0.00" 
           />
         </div>

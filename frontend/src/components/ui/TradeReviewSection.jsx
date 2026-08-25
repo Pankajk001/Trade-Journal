@@ -15,7 +15,7 @@ const TradeReviewSection = ({
   loading
 }) => {
   return (
-    <div className="bg-[#1c1c1c] rounded-2xl border border-gray-800/80 p-6 shadow-lg [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
+    <div className="bg-[#1c1c1c] rounded-2xl border border-gray-800/80 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
       <h2 className="text-xl font-bold mb-6 text-white [html:not(.dark)_&]:text-slate-900">Review & Reflection</h2>
       
       <div className="space-y-6">
@@ -101,9 +101,10 @@ const TradeReviewSection = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormInput label="Trade Management" name="tradeManagement" value={formData.tradeManagement} onChange={handleChange} placeholder="e.g. Partials 1R/2R, SL to BE" />
-          <FormInput label="Mistakes" name="mistakesMade" placeholder="e.g. Added to Position" />
+          <FormInput label="Lessons Learned" name="lessonsLearned" value={formData.lessonsLearned} onChange={handleChange} placeholder="e.g. Wait for candle close" />
+          <FormInput label="Mistakes" name="mistakesMade" value={formData.mistakesMade} onChange={handleChange} placeholder="e.g. Added to Position" />
         </div>
 
         <div className="grid grid-cols-2 gap-6">
@@ -129,15 +130,6 @@ const TradeReviewSection = ({
         </div>
       </div>
       
-      {/* Submit Buttons */}
-      <div className="pt-8 mt-8 border-t border-gray-800/80 [html:not(.dark)_&]:border-slate-200 flex justify-end gap-3">
-        <a href="/dashboard/journal" className="w-40 py-3 rounded-xl border border-gray-700 text-gray-400 font-semibold hover:bg-gray-800 hover:text-white transition-colors [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-50 text-sm flex items-center justify-center">
-          Go to Journal
-        </a>
-        <button type="submit" disabled={loading} className="w-40 py-3 rounded-xl bg-violet-500 text-white font-semibold shadow-lg shadow-violet-500/20 hover:bg-violet-600 transition-colors text-sm flex items-center justify-center disabled:opacity-50">
-          {loading ? 'Saving...' : 'Save Trade'}
-        </button>
-      </div>
     </div>
   );
 };

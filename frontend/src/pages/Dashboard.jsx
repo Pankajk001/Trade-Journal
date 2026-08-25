@@ -55,7 +55,7 @@ const Dashboard = () => {
       {/* Middle Row: Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Equity Curve */}
-        <div className="lg:col-span-2 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent">
+        <div className="lg:col-span-2 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm p-6 rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
           <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-6">Equity Curve</h2>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -81,7 +81,7 @@ const Dashboard = () => {
         </div>
 
         {/* Win/Loss Pie Chart */}
-        <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm p-6 rounded-xl shadow-2xl shadow-black/60 border border-transparent flex flex-col">
+        <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm p-6 rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 flex flex-col">
           <h2 className="text-lg font-semibold text-white [html:not(.dark)_&]:text-slate-900 mb-6">Win/Loss Distribution</h2>
           <div className="flex-1 min-h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -111,7 +111,7 @@ const Dashboard = () => {
       </div>
 
       {/* Bottom Row: Recent Trades */}
-      <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl shadow-2xl shadow-black/60 border border-transparent overflow-hidden">
+      <div className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 overflow-hidden">
         <div className="p-6 border-b border-gray-700 [html:not(.dark)_&]:border-slate-200 flex justify-between items-center mb-4 px-2">
           <h2 className="text-xl font-bold text-white [html:not(.dark)_&]:text-slate-900">Recent Trades</h2>
           <Link to="/dashboard/journal" className="text-violet-500 hover:text-violet-400 text-sm">View All</Link>

@@ -72,7 +72,7 @@ const Strategies = () => {
       {loading ? (
         <div className="text-gray-400 text-center py-10">Loading Library...</div>
       ) : strategies.length === 0 ? (
-        <div className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-center py-10 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl shadow-2xl shadow-black/60 border border-transparent">
+        <div className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-center py-10 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
           Your library is empty. Click "+ Add Strategy" to start logging your strategies.
         </div>
       ) : (
@@ -81,7 +81,7 @@ const Strategies = () => {
             <div
               key={strategy._id}
               onClick={() => setSelectedStrategy(strategy)}
-              className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-xl shadow-2xl shadow-black/60 border border-transparent p-6 flex flex-col h-full relative group shadow-sm transition-transform hover:scale-[1.02] cursor-pointer"
+              className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 p-6 flex flex-col h-full relative group shadow-sm transition-transform hover:scale-[1.02] cursor-pointer"
             >
               <button
                 onClick={(e) => {

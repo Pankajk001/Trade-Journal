@@ -77,7 +77,7 @@ const Notes = () => {
         <button
           onClick={() => setActiveCategory('')}
           className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-            activeCategory === '' ? 'bg-violet-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white shadow-2xl shadow-black/60 border border-transparent'
+            activeCategory === '' ? 'bg-violet-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200'
           }`}
         >
           All Notes
@@ -87,7 +87,7 @@ const Notes = () => {
             key={cat}
             onClick={() => setActiveCategory(cat)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              activeCategory === cat ? 'bg-violet-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white shadow-2xl shadow-black/60 border border-transparent'
+              activeCategory === cat ? 'bg-violet-600 text-white' : 'bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm text-gray-400 hover:bg-gray-700 hover:text-white border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200'
             }`}
           >
             {cat}
@@ -98,13 +98,13 @@ const Notes = () => {
       {loading ? (
         <div className="text-gray-400 text-center py-10">Loading Notes...</div>
       ) : notes.length === 0 ? (
-        <div className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-center py-10 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl shadow-2xl shadow-black/60 border border-transparent">
+        <div className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-center py-10 bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:shadow-sm rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200">
           No notes found in this category.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {notes.map((note) => (
-            <div key={note._id} className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-xl shadow-2xl shadow-black/60 border border-transparent flex flex-col overflow-hidden group shadow-sm transition-transform hover:scale-[1.01]">
+            <div key={note._id} className="bg-[#1c1c1c] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 flex flex-col overflow-hidden group shadow-sm transition-transform hover:scale-[1.01]">
               
               {/* Attachment Preview (if any) */}
               {note.attachmentUrl ? (

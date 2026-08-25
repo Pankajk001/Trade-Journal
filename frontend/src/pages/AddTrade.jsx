@@ -48,6 +48,8 @@ const AddTrade = () => {
     noteReflection: '',
     entryConfluences: [],
     mistakesMade: '',
+    lessonsLearned: '',
+    isPublic: false,
   });
 
   const [strategies, setStrategies] = useState([]);
@@ -122,6 +124,9 @@ const AddTrade = () => {
       Object.keys(formData).forEach(key => {
         if (key === 'entryConfluences') {
           formData[key].forEach(val => submitData.append('entryConfluences[]', val));
+        } else if (key === 'netPnl') {
+          let cleanPnl = formData[key].toString().replace(/[^0-9.-]/g, '');
+          submitData.append(key, cleanPnl);
         } else {
           submitData.append(key, formData[key]);
         }
@@ -130,6 +135,11 @@ const AddTrade = () => {
       if (files.screenshotHTF) submitData.append('screenshotHTF', files.screenshotHTF);
       if (files.screenshotMTF) submitData.append('screenshotMTF', files.screenshotMTF);
       if (files.screenshotLTF) submitData.append('screenshotLTF', files.screenshotLTF);
+
+      const selectedStrategy = strategies.find(s => s._id === formData.intendedPlan);
+      if (selectedStrategy) {
+        submitData.append('strategyName', selectedStrategy.name);
+      }
 
       await createTrade(submitData);
       navigate('/dashboard/journal');
@@ -173,9 +183,45 @@ const AddTrade = () => {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto space-y-6 text-gray-200 [html:not(.dark)_&]:text-slate-800">
-      <PageHeader title="Log New Trade" backLink="/dashboard/journal" />
+      <PageHeader 
+        title="Log New Trade" 
+        titleClassName="text-[15px] font-bold"
+        backLink="/dashboard/journal" 
+        rightContent={
+          <>
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, isPublic: !prev.isPublic }))}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[11px] font-bold transition-colors mr-2 ${
+                formData.isPublic 
+                  ? 'bg-violet-500/10 border-violet-500/30 text-violet-500 [html:not(.dark)_&]:bg-violet-50 [html:not(.dark)_&]:border-violet-200 [html:not(.dark)_&]:text-violet-600' 
+                  : 'bg-[#1c1c1c] border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800 [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-800'
+              }`}
+            >
+              <div className={`w-3 h-3 rounded-[2px] border flex items-center justify-center transition-colors ${
+                formData.isPublic ? 'bg-violet-500 border-violet-500' : 'border-gray-500 bg-transparent [html:not(.dark)_&]:border-slate-400'
+              }`}>
+                {formData.isPublic && (
+                  <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+              Make Trade Public
+            </button>
+            <button 
+              type="submit" 
+              form="trade-form" 
+              disabled={loading}
+              className="bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white text-xs font-bold py-1 px-3 rounded-md shadow-lg shadow-violet-500/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+            >
+              {loading ? 'Saving...' : 'Save Trade'}
+            </button>
+          </>
+        }
+      />
       
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+      <form id="trade-form" onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         
         <TradeContextSection 
           formData={formData}
