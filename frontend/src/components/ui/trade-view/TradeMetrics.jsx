@@ -7,7 +7,7 @@ const TradeMetrics = ({ trade }) => {
   const isLoss = netPnlNum < 0 || String(trade.netPnl || '').includes('-') || trade.winLoss === 'Loss';
   
   return (
-    <div className="flex flex-wrap items-center justify-start lg:justify-end gap-6 sm:gap-8">
+    <div className="flex items-center gap-6 sm:gap-8">
       <Metric 
         label="Net PNL" 
         value={trade.netPnl || '$0.00'} 
@@ -15,12 +15,8 @@ const TradeMetrics = ({ trade }) => {
       />
       <Metric label="R-Multiple" value={trade.rMultiple ? `${trade.rMultiple}R` : '-'} />
       <Metric label="Risk" value={trade.riskPercentage ? `${trade.riskPercentage}%` : '-'} />
-      <div className="hidden sm:block">
-        <Metric label="Lot Size" value={trade.lotSize || '-'} />
-      </div>
-      <div className="hidden sm:block">
-        <Metric label="Duration" value={trade.duration || '-'} />
-      </div>
+      <Metric label="Lot Size" value={trade.lotSize || '-'} />
+      <Metric label="Duration" value={trade.duration || '-'} />
     </div>
   );
 };

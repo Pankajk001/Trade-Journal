@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,17 +11,38 @@ const PublicNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Handle hash scrolling when navigating from another page
+  useEffect(() => {
+    if (location.pathname === '/' && location.hash) {
+      setTimeout(() => {
+        const id = location.hash.replace('#', '');
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [location]);
+
+  const handleNavClick = (id) => {
+    if (location.pathname !== '/') {
+      navigate(`/#${id}`);
       setMobileOpen(false);
+    } else {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setMobileOpen(false);
+      }
     }
   };
 
@@ -45,13 +66,13 @@ const PublicNavbar = () => {
 
             {/* Center nav links — desktop */}
             <div className="hidden md:flex items-center gap-1">
-              <button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
+              <button onClick={() => handleNavClick('features')} className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
                 Features
               </button>
-              <button onClick={() => scrollToSection('how-it-works')} className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
+              <button onClick={() => handleNavClick('how-it-works')} className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
                 How It Works
               </button>
-              <button onClick={() => scrollToSection('testimonials')} className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
+              <button onClick={() => handleNavClick('testimonials')} className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
                 Testimonials
               </button>
               <Link to="/gallery" className="text-gray-400 hover:text-white [html:not(.dark)_&]:text-slate-500 [html:not(.dark)_&]:hover:text-slate-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">
@@ -110,9 +131,9 @@ const PublicNavbar = () => {
         {/* Mobile dropdown */}
         {mobileOpen && (
           <div className="md:hidden border-t border-gray-800 [html:not(.dark)_&]:border-slate-200 bg-[#060606]/95 [html:not(.dark)_&]:bg-white/95 backdrop-blur-xl px-4 pb-4 pt-2 space-y-1">
-            <button onClick={() => scrollToSection('features')} className="block w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">Features</button>
-            <button onClick={() => scrollToSection('how-it-works')} className="block w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">How It Works</button>
-            <button onClick={() => scrollToSection('testimonials')} className="block w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">Testimonials</button>
+            <button onClick={() => handleNavClick('features')} className="block w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">Features</button>
+            <button onClick={() => handleNavClick('how-it-works')} className="block w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">How It Works</button>
+            <button onClick={() => handleNavClick('testimonials')} className="block w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">Testimonials</button>
             <Link to="/gallery" onClick={() => setMobileOpen(false)} className="block text-gray-300 [html:not(.dark)_&]:text-slate-600 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 [html:not(.dark)_&]:hover:bg-slate-100">Gallery</Link>
             <div className="pt-2 border-t border-gray-800 [html:not(.dark)_&]:border-slate-200 flex gap-2">
               {user ? (

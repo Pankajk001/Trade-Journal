@@ -1,12 +1,16 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import tradeService from '../services/tradeService';
 import PublicNavbar from '../components/PublicNavbar';
 import { format } from 'date-fns';
 import { FiX, FiTrendingUp, FiBookmark, FiActivity, FiDollarSign, FiPieChart, FiCheckCircle, FiXCircle, FiImage } from 'react-icons/fi';
 import TradeView from '../components/ui/TradeView';
+import TradeCard from '../components/ui/TradeCard';
+import Footer from '../components/Footer';
+import { AuthContext } from '../context/AuthContext';
 
 const FILTERS = ['All Trades', 'Crypto', 'Forex', 'Wins', 'Losses'];
+const ADS_ENABLED = false; // Toggle this to true when ad integration is ready
 
 const Gallery = () => {
   const [publicTrades, setPublicTrades] = useState([]);
@@ -43,6 +47,9 @@ const Gallery = () => {
       Losses: publicTrades.filter(t => t.winLoss === 'Loss').length,
     };
   }, [publicTrades]);
+
+  const { user } = useContext(AuthContext) || {};
+  const showAds = ADS_ENABLED && !user?.isPremium;
 
   return (
     <div className="min-h-screen bg-[#060606] [html:not(.dark)_&]:bg-[#fcfcfd] flex flex-col relative font-sans overflow-x-hidden">
@@ -98,82 +105,30 @@ const Gallery = () => {
               <p className="text-gray-400 [html:not(.dark)_&]:text-slate-500 text-lg font-medium">Try selecting a different category from the filters above.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTrades.map((trade) => {
-                const coverImage = trade.screenshotHTF || trade.screenshotBeforeEntry || trade.screenshotMTF || trade.screenshotLTF;
-                return (
-                  <div 
-                    key={trade._id} 
-                    onClick={() => setSelectedTrade(trade)}
-                    className="bg-[#121212] [html:not(.dark)_&]:bg-white rounded-none p-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-gray-800/60 [html:not(.dark)_&]:border-slate-100 flex flex-col group hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] [html:not(.dark)_&]:hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer"
-                  >
-                    {/* Image */}
-                    <div className="w-full aspect-video rounded-none overflow-hidden mb-5 relative bg-[#0a0a0a] [html:not(.dark)_&]:bg-slate-50">
-                      {coverImage ? (
-                        <img 
-                          src={coverImage} 
-                          alt="Trade Cover" 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-700 [html:not(.dark)_&]:text-slate-300">
-                          <FiImage size={32} />
-                        </div>
-                      )}
-                      
-                      <div className="absolute bottom-4 left-4">
-                        <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md backdrop-blur-md ${
-                          trade.market?.toLowerCase() === 'crypto' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 [html:not(.dark)_&]:bg-indigo-50 [html:not(.dark)_&]:text-indigo-600 [html:not(.dark)_&]:border-indigo-100' :
-                          trade.market?.toLowerCase() === 'forex' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 [html:not(.dark)_&]:bg-emerald-50 [html:not(.dark)_&]:text-emerald-600 [html:not(.dark)_&]:border-emerald-100' :
-                          'bg-violet-500/20 text-violet-300 border border-violet-500/30 [html:not(.dark)_&]:bg-violet-50 [html:not(.dark)_&]:text-violet-600 [html:not(.dark)_&]:border-violet-100'
-                        }`}>
-                          {trade.market || 'TRADE'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="px-3 pb-2 flex-1 flex flex-col">
-                      <h3 className="text-xl md:text-[22px] font-black font-serif text-white [html:not(.dark)_&]:text-slate-900 leading-tight mb-2.5 line-clamp-2 group-hover:text-violet-400 [html:not(.dark)_&]:group-hover:text-violet-600 transition-colors">
-                        {trade.strategyName ? `${trade.strategyName} on ${trade.pair}` : `${trade.direction} on ${trade.pair}`}
-                      </h3>
-                      <p className="text-[13px] font-semibold text-gray-500 [html:not(.dark)_&]:text-slate-500 mb-6 flex items-center gap-2">
-                        <span>{format(new Date(trade.date), 'MMM dd, yyyy')}</span>
-                        <span className="text-violet-500/50 [html:not(.dark)_&]:text-violet-300 font-bold">•</span>
-                        <span>{trade.rMultiple ? `${trade.rMultiple}R Profit` : 'Setup Review'}</span>
-                      </p>
-
-                      <div className="mt-auto flex items-center justify-between border-t border-gray-800/60 [html:not(.dark)_&]:border-slate-100 pt-5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white font-bold text-[11px] shadow-sm">
-                            {trade.user?.name ? trade.user.name.charAt(0).toUpperCase() : 'A'}
-                          </div>
-                          <span className="text-sm font-bold text-gray-400 [html:not(.dark)_&]:text-slate-700">By <span className="text-white [html:not(.dark)_&]:text-slate-900">{trade.user?.name || 'Anonymous'}</span></span>
-                        </div>
-                        <FiBookmark className="text-gray-600 [html:not(.dark)_&]:text-slate-400 hover:text-violet-500 transition-colors" size={20} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${showAds ? '' : 'xl:grid-cols-4'} gap-6 sm:gap-8`}>
+              {filteredTrades.map((trade) => (
+                <TradeCard key={trade._id} trade={trade} onClick={setSelectedTrade} />
+              ))}
             </div>
           )}
         </div>
 
         {/* Right Sidebar: Ad Spaces */}
-        <div className="w-full lg:w-[250px] flex-none flex flex-col gap-8 items-center lg:items-start">
-          {/* Ad Slot 1: Square (250x250) */}
-          <div className="w-full aspect-square bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4">
-            <span className="text-sm font-bold uppercase tracking-widest mb-2">Ad</span>
-            <span className="text-xs">250 x 250</span>
-          </div>
+        {showAds && (
+          <div className="w-full lg:w-[250px] flex-none flex flex-col gap-8 items-center lg:items-start">
+            {/* Ad Slot 1: Square (250x250) */}
+            <div className="w-full aspect-square bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4">
+              <span className="text-sm font-bold uppercase tracking-widest mb-2">Ad</span>
+              <span className="text-xs">250 x 250</span>
+            </div>
 
-          {/* Ad Slot 2: Tall Banner (250x600) */}
-          <div className="w-full h-[600px] bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4 sticky top-28">
-            <span className="text-sm font-bold uppercase tracking-widest mb-2 text-center">Ad</span>
-            <span className="text-xs text-center">250 x 600</span>
+            {/* Ad Slot 2: Tall Banner (250x600) */}
+            <div className="w-full h-[600px] bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4 sticky top-28">
+              <span className="text-sm font-bold uppercase tracking-widest mb-2 text-center">Ad</span>
+              <span className="text-xs text-center">250 x 600</span>
+            </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Full Screen "Page" Overlay for TradeView */}
@@ -194,22 +149,26 @@ const Gallery = () => {
             </div>
 
             {/* Right Sidebar: Ad Spaces */}
-            <div className="w-full lg:w-[250px] flex-none flex flex-col gap-8 items-center lg:items-start pt-12">
-              {/* Ad Slot 1: Square (250x250) */}
-              <div className="w-full aspect-square bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4">
-                <span className="text-sm font-bold uppercase tracking-widest mb-2">Ad</span>
-                <span className="text-xs">250 x 250</span>
-              </div>
+            {showAds && (
+              <div className="w-full lg:w-[250px] flex-none flex flex-col gap-8 items-center lg:items-start pt-12">
+                {/* Ad Slot 1: Square (250x250) */}
+                <div className="w-full aspect-square bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4">
+                  <span className="text-sm font-bold uppercase tracking-widest mb-2">Ad</span>
+                  <span className="text-xs">250 x 250</span>
+                </div>
 
-              {/* Ad Slot 2: Tall Banner (250x600) */}
-              <div className="w-full h-[600px] bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4 sticky top-28">
-                <span className="text-sm font-bold uppercase tracking-widest mb-2 text-center">Ad</span>
-                <span className="text-xs text-center">250 x 600</span>
+                {/* Ad Slot 2: Tall Banner (250x600) */}
+                <div className="w-full h-[600px] bg-[#121212] [html:not(.dark)_&]:bg-slate-100 rounded-none border-2 border-dashed border-gray-800 [html:not(.dark)_&]:border-slate-300 flex flex-col items-center justify-center text-gray-500 [html:not(.dark)_&]:text-slate-400 p-4 sticky top-28">
+                  <span className="text-sm font-bold uppercase tracking-widest mb-2 text-center">Ad</span>
+                  <span className="text-xs text-center">250 x 600</span>
+                </div>
               </div>
-            </div>
+            )}
           </main>
         </div>
       )}
+
+      <Footer />
     </div>
   );
 };
