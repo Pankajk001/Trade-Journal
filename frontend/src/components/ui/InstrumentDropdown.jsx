@@ -16,6 +16,7 @@ const instruments = [
   { group: 'Majors', options: ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'USDCAD', 'AUDUSD', 'NZDUSD'] },
   { group: 'Minors', options: ['EURGBP', 'EURJPY', 'GBPJPY', 'AUDJPY', 'EURAUD'] },
   { group: 'Metals / Indices', options: ['XAUUSD', 'XAGUSD', 'US30', 'NAS100'] },
+  { group: 'Crypto', options: ['BTCUSD', 'ETHUSD', 'SOLUSD', 'XRPUSD', 'ADAUSD'] },
 ];
 
 const InstrumentIcon = ({ pair }) => {
@@ -54,6 +55,24 @@ const InstrumentIcon = ({ pair }) => {
     return (
       <div className="relative flex items-center w-5 h-5">
         <img src={`https://flagcdn.com/w40/us.png`} alt="us" className="w-5 h-5 rounded-full object-cover" />
+      </div>
+    );
+  }
+
+  // Fallbacks for cryptos
+  if (['BTCUSD', 'ETHUSD', 'SOLUSD', 'XRPUSD', 'ADAUSD'].includes(pair)) {
+    const cryptoConfig = {
+      'BTCUSD': { symbol: '₿', bg: 'bg-[#F7931A]' },
+      'ETHUSD': { symbol: 'Ξ', bg: 'bg-[#627EEA]' },
+      'SOLUSD': { symbol: 'S', bg: 'bg-[#14F195] text-black' },
+      'XRPUSD': { symbol: '✕', bg: 'bg-[#23292F]' },
+      'ADAUSD': { symbol: '₳', bg: 'bg-[#0033AD]' },
+    };
+    const config = cryptoConfig[pair];
+    return (
+      <div className="relative flex items-center w-8 h-5">
+        <div className={`absolute left-0 w-5 h-5 rounded-full ${config.bg} ${config.bg.includes('text-black') ? '' : 'text-white'} border border-[#1c1c1c] [html:not(.dark)_&]:border-white z-10 flex items-center justify-center text-[10px] font-bold`}>{config.symbol}</div>
+        <img src={`https://flagcdn.com/w40/us.png`} alt="us" className="absolute left-3 w-5 h-5 rounded-full object-cover border border-[#1c1c1c] [html:not(.dark)_&]:border-white z-0" />
       </div>
     );
   }

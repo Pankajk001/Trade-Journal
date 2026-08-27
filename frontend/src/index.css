@@ -29,6 +29,17 @@
   html:not(.dark) * {
     scrollbar-color: #CBD5E1 #F1F5F9;
   }
+
+  /* Ensure all clickable elements, or things styled as buttons/links have cursor pointer */
+  button, 
+  [role="button"], 
+  input[type="submit"], 
+  input[type="button"],
+  select,
+  a[href],
+  .cursor-pointer {
+    cursor: pointer !important;
+  }
 }
 
 /* Light mode scrollbar */
