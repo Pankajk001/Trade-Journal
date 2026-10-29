@@ -81,15 +81,7 @@ export default function MarketChart({ symbol, interval, theme }) {
           )}
         </div>
       )}
-      <div className="market-chart-credit tradingview-widget-copyright">
-        <a
-          href="https://www.tradingview.com/"
-          target="_blank"
-          rel="noopener nofollow"
-        >
-          Track all markets on TradingView
-        </a>
-      </div>
+    
     </div>
   );
 }
