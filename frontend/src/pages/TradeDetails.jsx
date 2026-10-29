@@ -1,67 +1,213 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import tradeService from '../services/tradeService';
-import TradeView from '../components/ui/TradeView';
-import { FiTrash2, FiArrowLeft } from 'react-icons/fi';
-
-const TradeDetails = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [trade, setTrade] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
+import { useState, useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { useWorkspace } from "../hooks/useWorkspace";
+import tradeService from "../services/tradeService";
+import { mediaService } from "../services/mediaService";
+import { PageTitle, Notice, Loading, Pnl } from "../components/WorkspaceUI";
+function Screenshot({ image, index }) {
+  const [url, setUrl] = useState(""),
+    [error, setError] = useState("");
   useEffect(() => {
-    const fetchTrade = async () => {
-      try {
-        const data = await tradeService.getTradeById(id);
-        setTrade(data);
-      } catch (err) {
-        setError('Error fetching trade details');
-      } finally {
-        setLoading(false);
-      }
+    let active = true,
+      objectUrl;
+    mediaService
+      .read(image)
+      .then((value) => {
+        objectUrl = value;
+        if (active) setUrl(value);
+        else URL.revokeObjectURL(value);
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      });
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-    fetchTrade();
+  }, [image]);
+  return error ? (
+    <Notice error={error} />
+  ) : url ? (
+    <a href={url} target="_blank" rel="noreferrer">
+      <img
+        className="trade-screenshot"
+        src={url}
+        alt={"Trade chart screenshot " + (index + 1)}
+      />
+    </a>
+  ) : (
+    <Loading />
+  );
+}
+export default function TradeDetails() {
+  const { id } = useParams(),
+    navigate = useNavigate(),
+    w = useWorkspace();
+  const [trade, setTrade] = useState(null),
+    [error, setError] = useState(""),
+    [confirm, setConfirm] = useState(false),
+    [busy, setBusy] = useState(false);
+  useEffect(() => {
+    let active = true;
+    tradeService
+      .getTradeById(id)
+      .then((t) => {
+        if (active) setTrade(t);
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      });
+    return () => {
+      active = false;
+    };
   }, [id]);
-
-  const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this trade?')) {
-      try {
-        await tradeService.deleteTrade(id);
-        navigate('/dashboard/journal');
-      } catch (err) {
-        alert('Failed to delete trade');
-      }
+  async function remove() {
+    setBusy(true);
+    try {
+      await tradeService.deleteTrade(id);
+      navigate("/dashboard/journal");
+    } catch (e) {
+      setError(e.message);
+      setBusy(false);
     }
-  };
-
-  if (loading) return <div className="p-6 text-white [html:not(.dark)_&]:text-slate-900 text-center mt-20">Loading trade details...</div>;
-  if (error) return <div className="p-6 text-rose-500 text-center mt-20">{error}</div>;
-  if (!trade) return <div className="p-6 text-gray-400 [html:not(.dark)_&]:text-slate-500 text-center mt-20">Trade not found.</div>;
-
+  }
+  if (w.error || error)
+    return <Notice error={w.error || error} onRetry={w.reload} />;
+  if (w.loading || !trade) return <Loading />;
+  const account = w.accounts.find((a) => a.id === trade.accountId);
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
-      {/* Top Action Bar */}
-      <div className="flex justify-between items-center mb-8 bg-[#0a0a0a] [html:not(.dark)_&]:bg-white p-4 rounded-2xl border border-gray-800 [html:not(.dark)_&]:border-slate-200 shadow-sm">
-        <Link 
-          to="/dashboard/journal" 
-          className="flex items-center gap-2 text-gray-400 [html:not(.dark)_&]:text-slate-500 hover:text-white [html:not(.dark)_&]:hover:text-slate-900 transition-colors text-xs font-bold uppercase tracking-widest"
-        >
-          <FiArrowLeft size={16} /> Back to Journal
+    <div className="page-stack">
+      <PageTitle
+        title={trade.pair}
+        description={
+          trade.direction + " · " + account?.name + " · " + trade.tradeStatus
+        }
+      >
+        <Link className="button" to="/dashboard/journal">
+          Back
         </Link>
-        <button
-          onClick={handleDelete}
-          className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 border border-rose-500/20 [html:not(.dark)_&]:bg-rose-50 [html:not(.dark)_&]:hover:bg-rose-500 [html:not(.dark)_&]:hover:text-white [html:not(.dark)_&]:border-rose-200"
+        <Link
+          className="button primary"
+          to={"/dashboard/trade/" + id + "/edit"}
         >
-          <FiTrash2 size={16} /> Delete Trade
-        </button>
+          Edit trade
+        </Link>
+      </PageTitle>
+      <div className="metric-grid">
+        {[
+          [
+            "Net result",
+            <Pnl key="pnl" value={trade.netPnl} currency={account?.currency} />,
+          ],
+          [
+            "Realised R",
+            trade.rMultiple == null ? "—" : trade.rMultiple.toFixed(2) + "R",
+          ],
+          ["Review", trade.reviewed ? "Complete" : "Needs review"],
+          ["Strategy", trade.strategyName || "—"],
+        ].map(([label, value]) => (
+          <section className="panel metric" key={label}>
+            <span className="muted">{label}</span>
+            <strong className="compact-metric">{value}</strong>
+          </section>
+        ))}
       </div>
-
-      {/* Render the unified Blog-style TradeView */}
-      <TradeView trade={trade} />
+      <div className="two-columns">
+        <section className="panel">
+          <h2>Execution</h2>
+          <dl className="detail-list">
+            {[
+              [
+                "Entry",
+                new Date(trade.date).toLocaleString(undefined, {
+                  timeZone: w.profile.timezone,
+                }),
+              ],
+              [
+                "Exit",
+                trade.closedAt
+                  ? new Date(trade.closedAt).toLocaleString(undefined, {
+                      timeZone: w.profile.timezone,
+                    })
+                  : "Still open",
+              ],
+              ["Timezone", w.profile.timezone],
+              ["Session", trade.session],
+              ["Entry price", trade.entryPrice],
+              ["Exit price", trade.exitPrice],
+              ["Size / lots", trade.lotSize],
+              ["Initial risk", trade.initialRisk],
+              ["Fees (already included in net)", trade.fees],
+              ["Swap / funding (already included)", trade.swap],
+            ].map(([k, v]) => (
+              <div key={k}>
+                <dt className="muted">{k}</dt>
+                <dd>{v == null || v === "" ? "—" : v}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+        <section className="panel">
+          <h2>Reflection</h2>
+          <div className="reflection-content">
+            {[
+              [
+                "Plan adherence",
+                trade.followedPlan ? "Followed plan" : "Not marked as followed",
+              ],
+              [
+                "Emotions",
+                (trade.entryEmotion || "—") +
+                  " → " +
+                  (trade.exitEmotion || "—"),
+              ],
+              ["What happened", trade.noteReflection],
+              ["Mistakes", trade.mistakesMade],
+              ["Lesson", trade.lessonsLearned],
+            ].map(([label, text]) => (
+              <div key={label}>
+                <p className="eyebrow">{label}</p>
+                <p>{text || "No notes yet."}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+      {!!trade.images?.length && (
+        <section className="panel">
+          <h2>Trade screenshots</h2>
+          <div className="screenshot-grid">
+            {trade.images.map((image, index) => (
+              <Screenshot key={image} image={image} index={index} />
+            ))}
+          </div>
+        </section>
+      )}
+      <section className="panel">
+        <div className="section-heading">
+          <p className="muted">
+            Deleted trades remain available in Recently deleted.
+          </p>
+          {!confirm ? (
+            <button className="button danger" onClick={() => setConfirm(true)}>
+              Delete trade
+            </button>
+          ) : (
+            <div className="actions">
+              <button className="button" onClick={() => setConfirm(false)}>
+                Cancel
+              </button>
+              <button
+                className="button danger"
+                disabled={busy}
+                onClick={remove}
+              >
+                {busy ? "Deleting…" : "Confirm deletion"}
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
-};
-
-export default TradeDetails;
+}

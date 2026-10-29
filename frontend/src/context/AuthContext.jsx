@@ -1,44 +1,35 @@
-import { createContext, useState, useEffect } from 'react';
-import authService from '../services/authService';
-
+import { createContext, useEffect, useState } from "react";
+import authService, { userView } from "../services/authService";
+import { supabase } from "../lib/supabase";
 export const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(Boolean(supabase));
   useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      try {
-        const data = await authService.getMe();
-        setUser(data);
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkUserLoggedIn();
+    if (!supabase) return;
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(userView(session?.user));
+      setLoading(false);
+    });
+    return () => data.subscription.unsubscribe();
   }, []);
-
-  const login = async (email, password) => {
-    const data = await authService.login(email, password);
-    setUser(data);
-  };
-
-  const register = async (name, email, password) => {
-    const data = await authService.register(name, email, password);
-    setUser(data);
-  };
-
-  const logout = async () => {
+  async function login(email, password) {
+    setUser(await authService.login(email, password));
+  }
+  async function register(name, email, password) {
+    const result = await authService.register(name, email, password);
+    setUser(result);
+    return result;
+  }
+  async function logout() {
     await authService.logout();
     setUser(null);
-  };
-
+  }
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, loading, login, register, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
+}

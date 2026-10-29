@@ -1,28 +1,49 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
+    try {
+      const stored = localStorage.getItem("theme");
+      return ["light", "dark", "system"].includes(stored) ? stored : "system";
+    } catch {
+      return "system";
+    }
   });
+  const [systemDark, setSystemDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
+  const resolvedTheme =
+    theme === "system" ? (systemDark ? "dark" : "light") : theme;
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-color-scheme: dark)");
+    const update = () => setSystemDark(query.matches);
+    query.addEventListener("change", update);
+    update();
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+    root.classList.toggle("dark", resolvedTheme === "dark");
+    root.style.colorScheme = resolvedTheme;
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {
+      /* Appearance remains usable when storage is unavailable. */
     }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [theme, resolvedTheme]);
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{ theme, resolvedTheme, setTheme, toggleTheme }}
+    >
       {children}
     </ThemeContext.Provider>
   );

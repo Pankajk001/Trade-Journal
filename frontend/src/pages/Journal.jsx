@@ -1,131 +1,238 @@
-import { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { TradeContext } from '../context/TradeContext';
-import { format } from 'date-fns';
-import PageHeader from '../components/ui/PageHeader';
-
-const Journal = () => {
-  const { trades, loading, page, pages, getTrades } = useContext(TradeContext);
-  const [keyword, setKeyword] = useState('');
-  const [winLoss, setWinLoss] = useState('');
-  const [session, setSession] = useState('');
-
-  useEffect(() => {
-    getTrades(keyword, winLoss, session, 1);
-    // eslint-disable-next-line
-  }, [keyword, winLoss, session]);
-
-  const handlePageChange = (newPage) => {
-    getTrades(keyword, winLoss, session, newPage);
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useWorkspace } from "../hooks/useWorkspace";
+import tradeService from "../services/tradeService";
+import { dayKey } from "../lib/analytics";
+import {
+  PageTitle,
+  AddButton,
+  Notice,
+  Loading,
+  Empty,
+  Pnl,
+} from "../components/WorkspaceUI";
+export default function Journal() {
+  const w = useWorkspace(),
+    [params] = useSearchParams();
+  const [search, setSearch] = useState(""),
+    [account, setAccount] = useState(""),
+    [status, setStatus] = useState(""),
+    [review, setReview] = useState(params.get("review") || ""),
+    [from, setFrom] = useState(""),
+    [to, setTo] = useState(""),
+    [page, setPage] = useState(1);
+  const [trash, setTrash] = useState(null),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const change = (setter) => (e) => {
+    setter(e.target.value);
+    setPage(1);
   };
-
+  async function toggleTrash() {
+    try {
+      setBusy(true);
+      setTrash(trash ? null : await tradeService.all({ deleted: true }));
+      setPage(1);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function restore(id) {
+    try {
+      await tradeService.restore(id);
+      setTrash(await tradeService.all({ deleted: true }));
+      await w.reload();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
+  if (w.loading) return <Loading />;
+  if (w.error) return <Notice error={w.error} onRetry={w.reload} />;
+  const rows = (trash || w.trades).filter((t) => {
+    const day = dayKey(t.date, w.profile.timezone);
+    return (
+      (!search ||
+        (t.pair + " " + (t.strategyName || "") + " " + (t.tags || ""))
+          .toLowerCase()
+          .includes(search.toLowerCase())) &&
+      (!account || t.accountId === account) &&
+      (!status || t.tradeStatus === status || t.winLoss === status) &&
+      (!review || !t.reviewed) &&
+      (!from || day >= from) &&
+      (!to || day <= to)
+    );
+  });
+  const pages = Math.max(1, Math.ceil(rows.length / 20)),
+    current = Math.min(page, pages),
+    visible = rows.slice((current - 1) * 20, current * 20);
   return (
-    <div className="p-6">
-      <PageHeader 
-        title="Trading Journal" 
-        buttonText="+ Add Trade" 
-        buttonLink="/dashboard/add-trade" 
-      />
-
-      {/* Filters & Search */}
-      <div className="bg-[#1c1c1c] p-4 rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 mb-6 flex flex-wrap gap-4">
+    <div className="page-stack">
+      <PageTitle
+        title={trash ? "Recently deleted." : "Your trading journal."}
+        description={
+          rows.length + " trades · searchable, filterable, and always private."
+        }
+      >
+        <button className="button" disabled={busy} onClick={toggleTrash}>
+          {trash ? "Back to journal" : "Recently deleted"}
+        </button>
+        <AddButton />
+      </PageTitle>
+      {error && <Notice error={error} />}
+      <div className="filter-bar">
         <input
-          type="text"
-          placeholder="Search by Pair or Strategy..."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500 [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-300 [html:not(.dark)_&]:text-slate-800"
+          aria-label="Search trades"
+          placeholder="Search instrument or strategy…"
+          value={search}
+          onChange={change(setSearch)}
         />
         <select
-          value={winLoss}
-          onChange={(e) => setWinLoss(e.target.value)}
-          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500 [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-300 [html:not(.dark)_&]:text-slate-800"
+          aria-label="Account"
+          value={account}
+          onChange={change(setAccount)}
         >
-          <option value="">All Results</option>
-          <option value="Win">Win</option>
-          <option value="Loss">Loss</option>
-          <option value="Breakeven">Breakeven</option>
+          <option value="">All accounts</option>
+          {w.accounts.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+            </option>
+          ))}
         </select>
         <select
-          value={session}
-          onChange={(e) => setSession(e.target.value)}
-          className="bg-[#060606] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500 [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-300 [html:not(.dark)_&]:text-slate-800"
+          aria-label="Trade result"
+          value={status}
+          onChange={change(setStatus)}
         >
-          <option value="">All Sessions</option>
-          <option value="London">London</option>
-          <option value="New York">New York</option>
-          <option value="Asian">Asian</option>
-        </select>
-      </div>
-
-      {/* Trades Table */}
-      <div className="bg-[#1c1c1c] rounded-xl border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 overflow-x-auto">
-        {loading ? (
-          <div className="p-8 text-center text-gray-400">Loading trades...</div>
-        ) : trades.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">No trades found.</div>
-        ) : (
-          <table className="w-full text-left text-gray-300 [html:not(.dark)_&]:text-slate-600">
-            <thead className="bg-[#060606] text-gray-400 text-sm uppercase [html:not(.dark)_&]:bg-slate-100 [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:border-b [html:not(.dark)_&]:border-slate-200">
-              <tr>
-                <th className="px-6 py-4 font-medium">Date</th>
-                <th className="px-6 py-4 font-medium">Pair</th>
-                <th className="px-6 py-4 font-medium">Direction</th>
-                <th className="px-6 py-4 font-medium">Strategy</th>
-                <th className="px-6 py-4 font-medium">RR</th>
-                <th className="px-6 py-4 font-medium">Result</th>
-                <th className="px-6 py-4 font-medium">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700 [html:not(.dark)_&]:divide-slate-200">
-              {trades.map((trade) => (
-                <tr key={trade._id} className="hover:bg-gray-700/30 transition-colors [html:not(.dark)_&]:hover:bg-slate-50">
-                  <td className="px-6 py-4">{format(new Date(trade.date), 'MMM dd, yyyy')}</td>
-                  <td className="px-6 py-4 font-medium text-white [html:not(.dark)_&]:text-slate-900">{trade.pair}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-xs ${trade.direction === 'Long' ? 'bg-[#1c1c1c] text-green-400 [html:not(.dark)_&]:bg-green-50 [html:not(.dark)_&]:text-green-600 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-green-200' : 'bg-[#1c1c1c] text-red-400 [html:not(.dark)_&]:bg-red-50 [html:not(.dark)_&]:text-red-600 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-red-200'}`}>
-                      {trade.direction}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">{trade.strategyName}</td>
-                  <td className="px-6 py-4">{trade.riskRewardRatio}R</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-xs ${trade.winLoss === 'Win' ? 'bg-[#1c1c1c] text-green-400 [html:not(.dark)_&]:bg-green-50 [html:not(.dark)_&]:text-green-600 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-green-200' : trade.winLoss === 'Loss' ? 'bg-[#1c1c1c] text-red-400 [html:not(.dark)_&]:bg-red-50 [html:not(.dark)_&]:text-red-600 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-red-200' : 'bg-gray-500/10 text-gray-400 [html:not(.dark)_&]:bg-slate-100 [html:not(.dark)_&]:text-slate-600 [html:not(.dark)_&]:border [html:not(.dark)_&]:border-slate-300'}`}>
-                      {trade.winLoss}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <Link to={`/dashboard/trade/${trade._id}`} className="text-violet-500 hover:text-violet-400 font-medium">
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      {/* Pagination */}
-      {!loading && pages > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
-          {[...Array(pages).keys()].map((x) => (
-            <button
-              key={x + 1}
-              onClick={() => handlePageChange(x + 1)}
-              className={`px-4 py-2 rounded-lg ${
-                x + 1 === page
-                  ? 'bg-violet-600 text-white'
-                  : 'bg-[#1c1c1c] border border-gray-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.12)] [html:not(.dark)_&]:shadow-[0_8px_30px_rgb(0,0,0,0.04)] [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:border-slate-200 text-gray-400 hover:bg-gray-700 [html:not(.dark)_&]:hover:bg-slate-100 [html:not(.dark)_&]:text-slate-600'
-              }`}
-            >
-              {x + 1}
-            </button>
+          {["", "Open", "Closed", "Win", "Loss", "Breakeven"].map((s) => (
+            <option key={s} value={s}>
+              {s || "All results"}
+            </option>
           ))}
-        </div>
+        </select>
+        <select
+          aria-label="Review status"
+          value={review}
+          onChange={change(setReview)}
+        >
+          <option value="">All reviews</option>
+          <option value="needed">Needs review</option>
+        </select>
+        <label>
+          From <input type="date" value={from} onChange={change(setFrom)} />
+        </label>
+        <label>
+          To{" "}
+          <input type="date" min={from} value={to} onChange={change(setTo)} />
+        </label>
+      </div>
+      {!rows.length ? (
+        <Empty
+          title={trash ? "Nothing in recently deleted" : "No trades found"}
+          text="Try different filters, or log a new trade."
+        >
+          {!trash && <AddButton />}
+        </Empty>
+      ) : (
+        <>
+          <section className="panel trade-table-wrap">
+            <table className="trade-table">
+              <thead>
+                <tr>
+                  {[
+                    "Instrument",
+                    "Date",
+                    "Account",
+                    "Setup",
+                    "Net result",
+                    "Realised R",
+                    "Review",
+                    "",
+                  ].map((s, i) => (
+                    <th key={i}>{s}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {visible.map((t) => {
+                  const a = w.accounts.find((a) => a.id === t.accountId);
+                  return (
+                    <tr key={t.id}>
+                      <td data-label="Instrument">
+                        <strong>{t.pair}</strong>
+                        <small className="muted">
+                          {t.direction} · {t.tradeStatus}
+                        </small>
+                      </td>
+                      <td data-label="Date">
+                        {dayKey(t.date, w.profile.timezone)}
+                      </td>
+                      <td data-label="Account">{a?.name}</td>
+                      <td data-label="Setup">{t.strategyName || "—"}</td>
+                      <td data-label="Net result">
+                        <Pnl value={t.netPnl} currency={a?.currency} />
+                      </td>
+                      <td data-label="Realised R">
+                        {t.rMultiple == null
+                          ? "—"
+                          : t.rMultiple.toFixed(2) + "R"}
+                      </td>
+                      <td data-label="Review">
+                        <span className={"tag " + (t.reviewed ? "" : "amber")}>
+                          {t.reviewed ? "Reviewed" : "Needs review"}
+                        </span>
+                      </td>
+                      <td>
+                        {trash ? (
+                          <button
+                            className="text-link"
+                            onClick={() => restore(t.id)}
+                          >
+                            Restore
+                          </button>
+                        ) : (
+                          <Link
+                            className="text-link"
+                            to={"/dashboard/trade/" + t.id}
+                          >
+                            View →
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </section>
+          <div className="pagination">
+            <span className="muted">
+              {rows.length} trades · Page {current} of {pages}
+            </span>
+            <div className="actions">
+              <button
+                className="button"
+                disabled={current === 1}
+                onClick={() => setPage(current - 1)}
+              >
+                Previous
+              </button>
+              <button
+                className="button"
+                disabled={current === pages}
+                onClick={() => setPage(current + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
       )}
+      <p className="caption">
+        Each result uses its account currency. Values from different currencies
+        are never added together.
+      </p>
     </div>
   );
-};
-
-export default Journal;
+}
