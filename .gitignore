@@ -129,3 +129,50 @@ dist
 
 # Windows
 Thumbs.db
+
+playwright-report/
+test-results/
+.wrangler/
+.dev.vars
+/supabase_keys.txt
+
+# Local credentials and environment variants (keep only sanitized templates)
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.dev.vars*
+!.dev.vars.example
+*keys*.txt
+*secrets*.txt
+*credentials*.txt
+credentials.json
+credentials.*.json
+*service-account*.json
+*service_account*.json
+secrets.json
+secrets.*.json
+secrets/
+.secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*keys*.json
+*secrets*.json
+*credentials*.json
+.envrc
+.envrc.*
+.direnv/
+.aws/
+.azure/
+.npmrc
+.pypirc
+__pycache__/
+*.py[cod]
+supabase/.temp/
+
+# Local recovery exports
+/backups/

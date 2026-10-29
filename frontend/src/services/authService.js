@@ -1,51 +1,46 @@
-import api from './api';
-
-const authService = {
-  getMe: async () => {
-    const { data } = await api.get('/api/auth/me');
-    return data;
+import { db, currentUser, unwrap } from "../lib/supabase";
+export const userView = (user) =>
+  user
+    ? {
+        ...user,
+        _id: user.id,
+        name: user.user_metadata?.name || user.email?.split("@")[0],
+      }
+    : null;
+export default {
+  async getMe() {
+    return userView(await currentUser());
   },
-
-  login: async (email, password) => {
-    try {
-      const { data } = await api.post('/api/auth/login', { email, password });
-      return data;
-    } catch (err) {
-      console.warn('API unavailable. Simulating mock login for presentation.', err);
-      // Mock successful login
-      return {
-        _id: 'mock_user_123',
-        name: 'Demo User',
-        email: email,
-        token: 'mock_jwt_token_123'
-      };
-    }
+  async login(email, password) {
+    return userView(
+      unwrap(await db().auth.signInWithPassword({ email, password })).user,
+    );
   },
-
-  register: async (name, email, password) => {
-    try {
-      const { data } = await api.post('/api/auth/register', { name, email, password });
-      return data;
-    } catch (err) {
-      console.warn('API unavailable. Simulating mock registration.', err);
-      return {
-        _id: 'mock_user_123',
-        name: name,
-        email: email,
-        token: 'mock_jwt_token_123'
-      };
-    }
+  async register(name, email, password) {
+    const data = unwrap(
+      await db().auth.signUp({ email, password, options: { data: { name } } }),
+    );
+    return data.session ? userView(data.user) : null;
   },
-
-  logout: async () => {
-    const { data } = await api.post('/api/auth/logout');
-    return data;
+  async logout() {
+    unwrap(await db().auth.signOut());
   },
-
-  updateProfile: async (profileData) => {
-    const { data } = await api.put('/api/auth/me', profileData);
-    return data;
-  }
+  async updateProfile({ name, email, password }) {
+    return userView(
+      unwrap(
+        await db().auth.updateUser({
+          email,
+          ...(password ? { password } : {}),
+          data: { name },
+        }),
+      ).user,
+    );
+  },
+  async resetPassword(email) {
+    unwrap(
+      await db().auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      }),
+    );
+  },
 };
-
-export default authService;
