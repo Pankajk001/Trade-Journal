@@ -1,5 +1,11 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { findMarket } from "../lib/markets";
 import { AuthContext } from "../context/AuthContext";
 import { useWorkspace } from "../hooks/useWorkspace";
 import tradeService from "../services/tradeService";
@@ -46,11 +52,18 @@ const initial = () => ({
   },
 });
 export default function AddTrade() {
+  const [searchParams] = useSearchParams();
+  const selectedMarket = findMarket(searchParams.get("symbol"));
+  const requestedSymbol = selectedMarket?.symbol || "";
   const { id } = useParams(),
     { user } = useContext(AuthContext),
     w = useWorkspace(),
     navigate = useNavigate();
-  const key = "trade-draft:" + user.id + ":" + (id || "new");
+  const key =
+    "trade-draft:" +
+    user.id +
+    ":" +
+    (id || (requestedSymbol ? "market:" + requestedSymbol : "new"));
   const [form, setForm] = useState(initial),
     [strategies, setStrategies] = useState([]),
     [error, setError] = useState(""),
@@ -66,6 +79,12 @@ export default function AddTrade() {
       try {
         const options = await strategyService.getStrategies();
         let value = id ? await tradeService.getTradeById(id) : initial();
+        if (!id && selectedMarket)
+          value = {
+            ...value,
+            pair: selectedMarket.pair,
+            details: { ...value.details, marketSource: selectedMarket.symbol },
+          };
         if (id) {
           const {
             accountId,
@@ -113,7 +132,7 @@ export default function AddTrade() {
     return () => {
       active = false;
     };
-  }, [id, key]);
+  }, [id, key, selectedMarket]);
   useEffect(() => {
     if (!ready || busy || submitting.current) return;
     const timer = setTimeout(() => {

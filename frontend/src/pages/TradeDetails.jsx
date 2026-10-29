@@ -133,6 +133,7 @@ export default function TradeDetails() {
               ],
               ["Timezone", w.profile.timezone],
               ["Session", trade.session],
+              ["Market chart source", trade.marketSource],
               ["Entry price", trade.entryPrice],
               ["Exit price", trade.exitPrice],
               ["Size / lots", trade.lotSize],

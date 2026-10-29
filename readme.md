@@ -78,6 +78,36 @@ Update Supabase's Site URL/recovery redirects to the real Pages or custom domain
 
 Cloudflare Pages hosting is optional and does not require a local Cloudflare Worker. The unused cloudflare/ directory can be removed. Keep supabase/migrations/: these SQL files document the database and private-storage setup and are executed by the database tests.
 
+## Price alerts
+
+Open Markets and select the bell or the Alerts tab. Create up to 20 one-shot alerts for gold, silver or the supported crypto pairs, with an inclusive at/above or at/below USD level. Pause/resume, rearm, delete, and filter active/paused/triggered alerts. Definitions and trigger history are scoped to the signed-in account in this browser's local storage; they are not synced to Supabase or other devices. No migration, API key, card or paid account is needed.
+
+Monitoring continues across journal routes while the signed-in app is open. It polls active symbols about every 30 seconds, rejects quotes older than two minutes or malformed responses, retries outages, and records the observed trigger price/time. It can trigger on the first valid sample if the condition is already satisfied. Brief moves between checks can be missed. It stops on logout, browser closure or device sleep, and browser background throttling can delay checks. No closed-app push/email/SMS delivery is provided. A Web Lock and storage events coordinate tabs where supported; keep one app tab open on browsers without Web Locks to avoid duplicate notifications.
+
+Gold/silver use [Gold API's free public spot endpoint](https://gold-api.com/docs); crypto uses [Coinbase Exchange's public last-trade ticker](https://docs.cdp.coinbase.com/api-reference/exchange-api/rest-api/products/get-product-ticker). These independent feeds may differ from the chart's OANDA/Bitstamp feed or your execution broker. Forex alerts are unavailable until a suitable live forex feed is configured. The chart embed does not supply quote data to our alert engine. Provider requests contain only the requested public instrument, never journal records or credentials.
+
+In-app banners work without notification permission. Sound is optional and must be enabled by a user gesture each session. Desktop notifications are opt-in, require browser support/permission and HTTPS (or localhost), and do not enable closed-app monitoring. Mobile browser support varies. Local storage restrictions are surfaced as a session-only warning.
+
+## Markets: forex, metals and crypto
+
+The Markets page embeds TradingView's free Advanced Chart widget for a supported catalogue of forex pairs, gold/silver USD feeds and crypto pairs. Indian exchanges are not included in the chart selector. No TradingView API key, paid data subscription or extra Supabase migration is required.
+
+- Search the instrument catalogue or select a symbol from the chart toolbar.
+- Save a per-user watchlist, selected symbol and timeframe on this browser/device. These preferences are not synced between devices.
+- The chart follows Light/Dark/System appearance and can expand to fill the workspace. Markets uses a chart-first terminal layout with compact controls and a collapsible right watchlist. The top navbar stays pinned; the left sidebar collapse button lives beside the logo, or below it in icon mode.
+- Log trade opens a separate instrument-specific draft with the pair prefilled and the chart's provider recorded as a reference. Existing general drafts are preserved.
+- The feed is hosted by TradingView. Provider branding and attribution remain visible. Quote availability and freshness are governed by that provider; broker/CFD prices can differ from the execution venue.
+- No fake candles or fallback prices are generated. Network/content-blocker failures expose a retry action. A loaded iframe is not treated as proof of live ticks.
+- Embedded chart tools are controlled by TradingView; changes made inside the widget are not automatically saved to the journal. The embedded prices do not calculate account P&L.
+- Only the Markets route loads the external chart script. TradingView receives the displayed symbol and standard browser connection metadata; journal records, screenshots and Supabase credentials are not sent as widget configuration.
+
+Browser tests stub the external embed so UI tests remain deterministic. The optional frontend/scripts/check-markets.mjs smoke check uses process-environment credentials and the actual provider chart. It makes no journal writes.
+
+Provider documentation:
+- https://www.tradingview.com/widget-docs/widgets/charts/advanced-chart/
+- https://www.tradingview.com/widget-docs/faq/data/
+- https://www.tradingview.com/widget-docs/markets/worldwide/
+
 ## Calculations and date semantics
 
 net_pnl is the broker-reported final result, after all costs, in the account's currency. Optional fees and swap are reference fields and are **not subtracted again**. No universal price × lot-size calculation is assumed; contract specifications differ by instrument.

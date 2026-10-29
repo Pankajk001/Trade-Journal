@@ -14,6 +14,7 @@ const Library = lazy(() => import("./pages/Library"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Accounts = lazy(() => import("./pages/Accounts"));
 const DailyReview = lazy(() => import("./pages/DailyReview"));
+const Markets = lazy(() => import("./pages/Markets"));
 export default function App() {
   return (
     <BrowserRouter>
@@ -34,6 +35,7 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="journal" element={<Journal />} />
+            <Route path="markets" element={<Markets key="markets" />} />
             <Route path="statistics" element={<Statistics />} />
             <Route path="add-trade" element={<AddTrade />} />
             <Route path="trade/:id" element={<TradeDetails />} />

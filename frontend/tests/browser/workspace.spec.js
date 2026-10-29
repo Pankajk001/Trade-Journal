@@ -1,5 +1,115 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+
+test("price alerts persist, pause, trigger across routes, and fire once", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page);
+  await page.clock.install();
+  let price = 3900;
+  await page.route("https://api.gold-api.com/price/XAU", (route) =>
+    route.fulfill({
+      json: {
+        symbol: "XAU",
+        currency: "USD",
+        price,
+        updatedAt: new Date().toISOString(),
+      },
+    }),
+  );
+  await page.goto("/dashboard/markets");
+  await page.getByRole("button", { name: "Open price alerts" }).click();
+  await page.getByLabel("Target price (USD)").fill("4000");
+  await page.getByRole("button", { name: "Create alert", exact: true }).click();
+  const card = page.locator(".price-alert-card");
+  await expect(card).toContainText("3,900 USD");
+  await card.getByRole("button", { name: "Pause", exact: true }).click();
+  await page.reload();
+  await page.getByRole("button", { name: "Open price alerts" }).click();
+  await expect(card).toContainText("paused");
+  await card.getByRole("button", { name: "Resume", exact: true }).click();
+  await expect(card).toContainText("3,900 USD");
+  price = 4100;
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Journal", exact: true })
+    .click();
+  await page.clock.runFor(31000);
+  await expect(page.locator(".price-alert-toast")).toContainText(
+    "XAUUSD: 4,100 USD",
+  );
+  await page.getByRole("button", { name: "Dismiss alert" }).click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Markets", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Open price alerts" }).click();
+  await expect(card).toContainText("triggered");
+  await expect(card).toContainText("Triggered at 4,100 USD");
+  await page.clock.runFor(31000);
+  await expect(page.locator(".price-alert-toast")).toHaveCount(0);
+  await page.reload();
+  await page.getByRole("button", { name: "Open price alerts" }).click();
+  await expect(card).toContainText("triggered");
+  await card.getByRole("button", { name: "Rearm", exact: true }).click();
+  await expect(page.locator(".price-alert-toast")).toBeVisible();
+  await card.getByRole("button", { name: "Delete XAUUSD alert" }).click();
+  await expect(card).toHaveCount(0);
+});
+
+test("mobile alerts reject stale prices and retry without false alarms", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page);
+  await page.clock.install();
+  await page.setViewportSize({ width: 390, height: 844 });
+  let fail = false;
+  await page.route("https://api.gold-api.com/price/XAU", (route) =>
+    fail
+      ? route.fulfill({ status: 503, body: "Unavailable" })
+      : route.fulfill({
+          json: {
+            symbol: "XAU",
+            price: 5000,
+            updatedAt: new Date(Date.now() - 3600000).toISOString(),
+          },
+        }),
+  );
+  await page.goto("/dashboard/markets");
+  await page.getByRole("button", { name: "Open price alerts" }).click();
+  await page.getByLabel("Target price (USD)").fill("4000");
+  await page.getByRole("button", { name: "Create alert", exact: true }).click();
+  await expect(page.locator(".price-alert-card")).toContainText(
+    "No fresh price",
+  );
+  await expect(page.locator(".price-alert-toast")).toHaveCount(0);
+  await expect(
+    page.getByText("Forex alerts need a separate live feed", { exact: false }),
+  ).toBeVisible();
+  expect(
+    await page
+      .getByLabel("Alert instrument")
+      .locator("option")
+      .allTextContents(),
+  ).not.toContain("EURUSD");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: "test-results/alerts-mobile.png",
+    fullPage: true,
+  });
+  fail = true;
+  await page.clock.runFor(31000);
+  await expect(page.locator(".price-alert-card")).toContainText(
+    "Price feed unavailable",
+  );
+  await expect(page.locator(".price-alert-toast")).toHaveCount(0);
+});
 const owner = "11111111-1111-4111-8111-111111111111";
 const account = {
   id: "33333333-3333-4333-8333-333333333333",
@@ -331,6 +441,7 @@ test("appearance settings persist and System follows the device", async ({
     await page.locator(".workspace-sidebar nav a").allTextContents(),
   ).toEqual([
     "Overview",
+    "Markets",
     "Journal",
     "Calendar",
     "Analytics",
@@ -515,4 +626,308 @@ test("failed trade requests show a retryable error instead of fabricated results
     page.getByRole("button", { name: "Retry", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".metric-grid")).toHaveCount(0);
+});
+
+async function marketEmbedFixture(page, { blocked = false } = {}) {
+  await page.route(
+    "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js",
+    (route) => {
+      if (blocked) return route.abort();
+      return route.fulfill({
+        contentType: "application/javascript",
+        body: `
+          (() => {
+          const script=document.currentScript;
+   const config=JSON.parse(script.textContent);
+   window.__marketConfigs ||= [];
+   window.__marketConfigs.push(config);
+   const frame=document.createElement('iframe');
+   frame.srcdoc='<html><body><p>External chart test fixture</p></body></html>';
+          script.parentElement.querySelector('.tradingview-widget-container__widget').append(frame);
+          })();
+  `,
+      });
+    },
+  );
+}
+test("Markets saves a watchlist, changes provider/timeframe, and follows the app theme", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page);
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/dashboard/markets");
+  await expect(
+    page.getByRole("heading", { name: "Markets", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".market-chart-host iframe")).toHaveCount(1);
+  await page.getByLabel("Chart symbol").selectOption("BITSTAMP:BTCUSD");
+  await page.getByLabel("Chart timeframe").selectOption("15");
+  await page
+    .getByRole("button", {
+      name: "Save selected symbol to watchlist",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("button", { name: "Saved", exact: true }).click();
+  await expect(page.locator(".market-symbol-choice")).toHaveCount(1);
+  await page.reload();
+  await expect(page.getByLabel("Chart symbol")).toHaveValue("BITSTAMP:BTCUSD");
+  await expect(page.getByLabel("Chart timeframe")).toHaveValue("15");
+  await expect(
+    page.getByRole("button", {
+      name: "Remove selected symbol from watchlist",
+      exact: true,
+    }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect
+    .poll(() => page.evaluate(() => window.__marketConfigs?.at(-1)?.theme))
+    .toBe("dark");
+  await expect(page.locator(".market-chart-host iframe")).toHaveCount(1);
+  await expect
+    .poll(() => page.evaluate(() => window.__marketConfigs?.at(-1)?.symbol))
+    .toBe("BITSTAMP:BTCUSD");
+  await page.getByLabel("Search market symbols").fill("Gold");
+  await expect(page.locator(".market-symbol-choice")).toHaveCount(1);
+  await page.locator(".market-symbol-choice").click();
+  await expect(page.getByLabel("Chart symbol")).toHaveValue("OANDA:XAUUSD");
+  await page.screenshot({
+    path: "test-results/markets-desktop.png",
+    fullPage: true,
+  });
+});
+test("Markets fits a phone, expands the chart and prefills trade entry without overwriting another draft", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page);
+  await page.goto("/dashboard/add-trade");
+  await page.getByLabel("Instrument", { exact: true }).fill("GBPJPY");
+  await expect(page.getByRole("status")).toContainText("Draft saved");
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Markets", exact: true })
+    .click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByLabel("Chart symbol").selectOption("OANDA:XAUUSD");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Expand chart", exact: true }).click();
+  await expect(page.locator(".market-terminal")).toHaveClass(/expanded/);
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".market-terminal")).not.toHaveClass(/expanded/);
+  await page.screenshot({
+    path: "test-results/markets-mobile.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("link", { name: "Log XAUUSD trade", exact: true })
+    .click();
+  await expect(page.getByLabel("Instrument", { exact: true })).toHaveValue(
+    "XAUUSD",
+  );
+  await page.goto("/dashboard/add-trade");
+  await expect(page.getByLabel("Instrument", { exact: true })).toHaveValue(
+    "GBPJPY",
+  );
+});
+test("a blocked market embed shows a retryable error without simulated candles", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page, { blocked: true });
+  await page.goto("/dashboard/markets");
+  await expect(page.getByRole("alert")).toContainText(
+    "The chart couldn’t connect.",
+  );
+  await expect(page.locator(".market-chart-host iframe")).toHaveCount(0);
+  await page.unroute(
+    "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js",
+  );
+  await marketEmbedFixture(page);
+  await page.getByRole("button", { name: "Retry chart", exact: true }).click();
+  await expect(page.locator(".market-chart-host iframe")).toHaveCount(1);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+});
+
+test("desktop sidebar collapses to working icon links and remembers its width", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/dashboard");
+  const sidebar = page.locator(".workspace-sidebar");
+  await expect
+    .poll(async () => Math.round((await sidebar.boundingBox()).width))
+    .toBe(232);
+  await page
+    .getByRole("button", { name: "Collapse sidebar", exact: true })
+    .press("Enter");
+  await expect
+    .poll(async () => Math.round((await sidebar.boundingBox()).width))
+    .toBe(76);
+  await expect(
+    page.getByRole("button", { name: "Expand sidebar", exact: true }),
+  ).toHaveAttribute("aria-expanded", "false");
+  await expect(sidebar.locator(".brand-text")).toBeHidden();
+  const markets = page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Markets", exact: true });
+  await expect(markets).toBeVisible();
+  await markets.press("Enter");
+  await expect(page).toHaveURL(/markets/);
+  await expect
+    .poll(async () =>
+      Math.round((await page.locator(".workspace-body").boundingBox()).x),
+    )
+    .toBe(76);
+  await page.reload();
+  await expect
+    .poll(async () => Math.round((await sidebar.boundingBox()).width))
+    .toBe(76);
+  await page.screenshot({
+    path: "test-results/sidebar-collapsed-desktop.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Expand sidebar", exact: true })
+    .press("Space");
+  await expect
+    .poll(async () => Math.round((await sidebar.boundingBox()).width))
+    .toBe(232);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Collapse sidebar", exact: true }),
+  ).toHaveAttribute("aria-expanded", "true");
+});
+test("a saved desktop collapse keeps the mobile navigation fully labelled", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await page.addInitScript(() =>
+    localStorage.setItem("sidebar-collapsed", "true"),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/dashboard");
+  await expect(
+    page.getByRole("button", { name: "Expand sidebar", exact: true }),
+  ).toBeHidden();
+  await page
+    .getByRole("button", { name: "Open navigation", exact: true })
+    .click();
+  const nav = page.getByRole("navigation", { name: "Main navigation" });
+  await expect(nav.getByText("Overview", { exact: true })).toBeVisible();
+  await expect(nav.getByText("Markets", { exact: true })).toBeVisible();
+  await expect
+    .poll(async () =>
+      Math.round(
+        (await page.locator(".workspace-sidebar").boundingBox()).width,
+      ),
+    )
+    .toBe(250);
+  await page.screenshot({
+    path: "test-results/sidebar-collapsed-mobile-menu.png",
+  });
+  await nav.getByRole("link", { name: "Journal", exact: true }).click();
+  await expect(page).toHaveURL(/journal/);
+  await expect(
+    page.getByRole("button", { name: "Open navigation", exact: true }),
+  ).toHaveAttribute("aria-expanded", "false");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("top navigation stays pinned while scrolling and sidebar controls stay inside the sidebar", async ({
+  page,
+}) => {
+  await fixtures(page);
+  for (const viewport of [
+    { width: 1440, height: 700 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/dashboard/settings");
+    await expect(
+      page.getByRole("heading", { name: "Make it yours." }),
+    ).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, 700));
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(0);
+    await expect
+      .poll(async () =>
+        Math.round((await page.locator(".workspace-topbar").boundingBox()).y),
+      )
+      .toBe(0);
+    await expect(
+      page.getByRole("button", { name: "Account options", exact: true }),
+    ).toBeInViewport();
+    await expect(
+      page.locator(".workspace-topbar .desktop-sidebar-toggle"),
+    ).toHaveCount(0);
+    if (viewport.width > 767) {
+      await page
+        .locator(".workspace-sidebar")
+        .getByRole("button", { name: "Collapse sidebar", exact: true })
+        .click();
+      await expect
+        .poll(async () =>
+          Math.round((await page.locator(".workspace-topbar").boundingBox()).x),
+        )
+        .toBe(76);
+      await page
+        .locator(".workspace-sidebar")
+        .getByRole("button", { name: "Expand sidebar", exact: true })
+        .click();
+    }
+  }
+});
+test("market terminal places the watchlist to the right and lets the chart reclaim that space", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await marketEmbedFixture(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/dashboard/markets");
+  await expect(page.locator(".market-chart-host iframe")).toHaveCount(1);
+  const chart = page.locator(".market-chart-panel"),
+    watchlist = page.getByRole("complementary", { name: "Market symbols" });
+  const initial = await chart.boundingBox(),
+    right = await watchlist.boundingBox();
+  expect(right.x).toBeGreaterThan(initial.x);
+  expect(Math.abs(right.y - initial.y)).toBeLessThan(2);
+  expect(
+    (await page.locator(".market-chart-host").boundingBox()).height,
+  ).toBeGreaterThan(650);
+  await page
+    .getByRole("button", { name: "Hide watchlist", exact: true })
+    .click();
+  await expect(watchlist).toHaveCount(0);
+  expect((await chart.boundingBox()).width).toBeGreaterThan(
+    initial.width + 200,
+  );
+  await page
+    .getByRole("button", { name: "Show watchlist", exact: true })
+    .click();
+  await expect(watchlist).toBeVisible();
+  await page
+    .locator(".workspace-sidebar")
+    .getByRole("button", { name: "Collapse sidebar", exact: true })
+    .click();
+  await expect
+    .poll(async () =>
+      Math.round(
+        (await page.locator(".workspace-sidebar").boundingBox()).width,
+      ),
+    )
+    .toBe(76);
+  await page.screenshot({ path: "test-results/market-terminal-desktop.png" });
 });
